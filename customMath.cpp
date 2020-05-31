@@ -6,10 +6,13 @@
 
 int interpFunc::binSearch(double tgt, double* in, int index, int size)
 {
-  if(tgt > *(in+size-1) || tgt < *(in))
+  if(tgt < *(in))
   {
-    std::cout << "-1 Returned" << '\n';
-    return -1;
+    return *(in);
+  }
+  if(tgt > *(in+size-1))
+  {
+    return *(in+size-1);
   }
   double comp = *(in+index+size/2);
   double plus = *(in+index+size/2+1);
@@ -48,7 +51,7 @@ double interpFunc::getInterp(double tgt)
   if(index == -1)
   {
     std::cout << "Value not in range of function" << '\n';
-    return -1.0
+    return -1.0;
   }
   return fitLine(tgt, index);
 };
