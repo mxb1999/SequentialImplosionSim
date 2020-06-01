@@ -14,9 +14,10 @@ void span(double* target, double start, double stop, int num)
   float increment = (stop-start)/(num - 1);
   for(int i = 0; i < num; i++)
   {
-    *(target + i) = start + (increment * i);
+    target[i] = start + (increment * i);
   }
 }
+
 void initialize()
 {
   uray = new double[nt];
@@ -568,7 +569,6 @@ void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
         valTrack <<  "2. thisz_m: " << thisz_m << "\n";
         valTrack <<  "2. thisz_p: " << thisz_p << "\n";
         */
-        interpFunc* lineFunc = new interpFunc(linez, linex, 2);
 
         for(int j = thisx_m; j < thisx_p;j++)
         {
@@ -576,7 +576,7 @@ void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
           if((myx[i] > currx && myx[i-1] <= currx) || (myx[i] < currx && myx[i-1] >= currx))
           {
 
-            double crossx = lineFunc->getInterp(currx);
+            double crossx =interp(linex, linez, currx, 2);
             if(abs(crossx-lastz)>1.0e-20)
             {
               *(*(ints[beam]+raynum)+numcrossing)=uray[i];
@@ -601,7 +601,7 @@ void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
           double currz = *(x[j])-dz/2;
           if((myz[i] > currz && myz[i-1] <= currz) || (myz[i] < currz && myz[i-1] > currz))
           {
-             double crossz = lineFunc->getInterp(currz);
+             double crossz = interp(linex, linez, currz, 2);
             if(abs(crossz-lastx)>1.0e-20)
             {
               *(*(ints[beam]+raynum)+numcrossing)=uray[i];
@@ -696,7 +696,7 @@ void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
   	    int increment = uray[i];
         double xp = (myx[i] - x[thisx][thisz]+dx/2.0)/dx;
   	    double zp = (myz[i] - z[thisx][thisz]+dz/2.0)/dz;
-        cout <<"XP and ZP:  " << xp << " || " << zp << endl;
+        //cout <<"XP and ZP:  " << xp << " || " << zp << endl;
         /*
         valTrack <<  "xp: " << xp << "\n";
         valTrack <<  "zp: " << zp << "\n";
@@ -773,18 +773,18 @@ void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
           rayz[j] = myz[j];
         }
         break;                  // "breaks" out of the i loop once the if condition is satisfied
-      } else if ( (myz[i] < (zmin-(dz/2.0))) | (myz[i] > (zmax+(dz/2.0)))){   // the "|" means "or" (symbol above the return key)
+      } else if ( (myz[i] < (zmin-(dz/2.0))) | (myz[i] > (zmax+(dz/2.0)))){
+           // the "|" means "or" (symbol above the return key)
         int finalt = i-1;
-        double* amp_norm = new double[finalt];
-        double* rayx = new double[finalt];
-        double* rayz = new double[finalt];
+        double amp_norm[finalt] = {0.0};
+        double rayx[finalt]= {0.0};
+        double rayz[finalt]= {0.0};
         for(int j = 0; j < finalt;j++)
         {
           amp_norm[j] = amplitude_norm[j];
           rayx[j] = myx[j];
           rayz[j] = myz[j];
         }
-
     }
 }
 }
@@ -803,31 +803,39 @@ void launchRays()
     kx0[i] = 1.0;
     kz0[i] = -0.1;
     pow_x[i] = exp(-1*pow(pow(phase_x[i]/sigma,2.0),4.0/2.0));
+    phase_x[i] += offset;
   }
   double finalts[nrays][nbeams];
-
-  interpFunc* powVPhase = new interpFunc(phase_x, pow_x, nrays);
   int beam = 1;
   cout << "BEAMNUM is" << beam << endl;
   span(z0, beam_min_z, beam_max_z, nrays);
+  cout <<  scientific;
+
   for(int i = 0; i < nrays; i++)
   {
     x0[i] = xmin-(dt/courant_mult*c*0.5);
     z0[i] += offset - (dz/2) - (dt/courant_mult*c*0.5);
-
   }
   for(int i = 0; i < nrays;i++)
   {
     raynum = i;
-    uray[i] = uray_mult*powVPhase->getInterp(z0[i]);
-    injected += uray[i];
+    cout<< "URAY INTERP_____________________" << endl;
+    uray[0] = uray_mult*interp(phase_x, pow_x, z0[i], nrays);
+    //printf("%s%lf\n", "z0[i]", z0[i]);
+    //printf("%s%lf\n", "Interp: ", interp(phase_x, pow_x, z0[i], nrays));
+    injected += uray[0];
     launch_ray_XZ(x0[i],z0[i],kx0[i],kz0[i]);
     *(finalts[i] + beam) = finalt;
-    cout << kx0[i] << " || " << kz0[i] << '\n';
+    //cout << kx0[i] << " || " << kz0[i] << '\n';
 
+  }
+  for(int i = 0; i < nrays; i++)
+  {
+    phase_x[i] -= offset;
   }
   beam = 2;
   cout << "BEAMNUM is" << beam << endl;
+  span(x0, beam_min_z, beam_max_z, nrays);
   for(int i = 0; i < nrays;i++)
   {
     z0[i] = zmin-(dt/courant_mult*c*0.5);
@@ -835,12 +843,29 @@ void launchRays()
     kx0[i] = 0.0;
     kz0[i] = 1.0;
     raynum = i;
-    uray[i] = uray_mult*powVPhase->getInterp(z0[i]);
-    injected += uray[i];
+    uray[0] = uray_mult*interp(phase_x, pow_x, x0[i], nrays);
+    injected += uray[0];
     launch_ray_XZ(x0[i],z0[i],kx0[i],kz0[i]);
     *(finalts[i] + beam) = finalt;
   }
-
+  /*
+for(int i = 0; i < nx; i++)
+{
+  for(int j = 0; j < nz; j++)
+  {
+    for(int m = 0; m < numstored; m++)
+    {
+      for(int p = 0; p < nbeams; p++)
+      {
+        if(marked[i][j][m][p] != 0)
+        {
+          cout << "Marked[i][j][m][p]: " << marked[i][j][m][p] << "|| i: " << i << "|| j: " << j << "|| m: " << m <<"|| p: " << p << endl;
+        }
+      }
+    }
+  }
+}
+*/
 printf("%s\n", "Got past launching the rays");
 int if_intersection_diagnostics = 0;
 for(int i = 0; i < nx; i++)
@@ -850,8 +875,6 @@ for(int i = 0; i < nx; i++)
     intersections[i][j] = 0;
   }
 }
-printf("%s\n", "RayCheck 1");
-printf("%d\n", marked[0][0][0][0]);
 for(int i = 1; i < nx;i++)
 {
   for(int j = 1; j < nz; j++)
@@ -881,7 +904,6 @@ for(int i = 1; i < nx;i++)
     }
   }
 }
-printf("%s\n", "RayCheck 2");
 }
 
 int main(int argc, char const *argv[]) {
