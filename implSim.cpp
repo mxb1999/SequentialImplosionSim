@@ -8,6 +8,11 @@
 #include "customMath.h"
 #include "implSim.h"
 #include "arrCheck.h"
+#include "Python.h"
+#include "./python3.6/matplotlib-cpp/matplotlibcpp.h"
+
+
+namespace plt = matplotlibcpp;
 using namespace std;
 void span(double* target, double start, double stop, int num)
 {
@@ -54,44 +59,44 @@ void initialize()
   {
     if(i < nx)
     {
-      intersections[i] = new double[nz];
-      x[i] = new double[nz];
-      z[i] = new double[nz];
-      eden[i] = new double[nz];
-      machnum[i] = new double[nz];
-      dedendx[i] = new double[nz];
-      dedendz[i] = new double[nz];
+      intersections[i] = new double[nz]{0.0};
+      x[i] = new double[nz]{0.0};
+      z[i] = new double[nz]{0.0};
+      eden[i] = new double[nz]{0.0};
+      machnum[i] = new double[nz]{0.0};
+      dedendx[i] = new double[nz]{0.0};
+      dedendz[i] = new double[nz]{0.0};
       present[i] = new int*[nz];
       marked[i] = new int**[nz];
       W1_storage[i] = new double*[nz];
       W2_storage[i] = new double*[nz];
-      u_flow[i] = new double[nz];
-      W1[i] = new double[nz];
-      W2[i] = new double[nz];
-      W1_init[i] = new double[nz];
-      W2_init[i] = new double[nz];
-      W1_new[i] = new double[nz];
-      W2_new[i] = new double[nz];
-      wpe[i] = new double[nz];
+      u_flow[i] = new double[nz]{0.0};
+      W1[i] = new double[nz]{0.0};
+      W2[i] = new double[nz]{0.0};
+      W1_init[i] = new double[nz]{0.0};
+      W2_init[i] = new double[nz]{0.0};
+      W1_new[i] = new double[nz]{0.0};
+      W2_new[i] = new double[nz]{0.0};
+      wpe[i] = new double[nz]{0.0};
       marked[i] = new int**[nz];
     }
-    i_b1[i] = new double[nz+2];
-    i_b2[i] = new double[nz+2];
+    i_b1[i] = new double[nz+2]{0.0};
+    i_b2[i] = new double[nz+2]{0.0};
     edep[i] = new double*[nz+2];
     for(int j = 0; j < nz+2; j++)
     {
       if(j < nz && i < nx)
       {
         marked[i][j] = new int*[numstored];
-        present[i][j] = new int[nbeams];
-        W1_storage[i][j] = new double[numstored];
-        W2_storage[i][j] = new double[numstored];
+        present[i][j] = new int[nbeams]{0};
+        W1_storage[i][j] = new double[numstored]{0.0};
+        W2_storage[i][j] = new double[numstored]{0.0};
         for(int m = 0; m < numstored;m++)
         {
-          marked[i][j][m] = new int[nbeams];
+          marked[i][j][m] = new int[nbeams]{0};
         }
       }
-      edep[i][j] = new double[nbeams];
+      edep[i][j] = new double[nbeams]{0.0};
 
     }
   }
@@ -106,16 +111,16 @@ void initialize()
     ints[i] = new int*[nrays];
     for(int j = 0; j < nrays; j++)
     {
-      dkx[i][j] = new double[2];
-      dkz[i][j] = new double[2];
-      dkmag[i][j] = new double[2];
-      crossesz[i][j] = new double[ncrossings];
-      crossesx[i][j] = new double[ncrossings];
+      dkx[i][j] = new double[2]{0.0};
+      dkz[i][j] = new double[2]{0.0};
+      dkmag[i][j] = new double[2]{0.0};
+      crossesz[i][j] = new double[ncrossings]{0.0};
+      crossesx[i][j] = new double[ncrossings]{0.0};
       boxes[i][j] = new int*[nx*3];
-      ints[i][j] = new int[ncrossings];
+      ints[i][j] = new int[ncrossings]{0};
       for(int m = 0; m < nx*3;m++)
       {
-        boxes[i][j][m] = new int[2];
+        boxes[i][j][m] = new int[2]{0};
       }
     }
   }
@@ -126,12 +131,11 @@ void initialize()
 
   for(int i = 0; i < nx; i++)
   {
+    span(z[i],xmin, xmax,nz);
     for(int j = 0; j < nz; j++)
     {
-      z[i][j] = zstore[i];
-      //printf("%s%f%s%d%s%d\n", "XStore: ", x[i][j], "||i: ", i, "||j: ", j);
+      x[i][j] = zstore[i];
     }
-    span(x[i],xmin, xmax,nz);
   }
 
 
@@ -140,20 +144,31 @@ void initialize()
     for(int j = 0; j < nz;j++)
     {
       eden[i][j] = max(0.0,((0.3*ncrit-0.1*ncrit)/(xmax-xmin))*(x[i][j]-xmin)+(0.1*ncrit));
+      wpe[i][j] = sqrt(eden[i][j]*1e6*pow(ec,2.0)/(me*e0));
       machnum[i][j] = max(0.0,(((-0.4)-(-2.4))/(xmax-xmin))*(x[i][j]-xmin)+(-2.4));
     }
   }
   printf("%s\n", "Initialize Check 2");
 
-  for(int i = 0; i < nx; i++)
+  for(int i = 0; i < nx-1; i++)
   {
-    for(int j = 0; j < nz; j++)
+    for(int j = 0; j < nz-1; j++)
     {
-      dedendz[i][j] = 0;
-      dedendx[i][j] = 0;
+      dedendx[i][j] = (eden[i+1][j]-eden[i][j])/(x[i+1][j]-x[i][j]);
+      dedendz[i][j] = (eden[i][j+1]-eden[i][j])/(z[i][j+1]-z[i][j]);
     }
   }
-
+  for(int i = 0; i < max(nx,nz);i++)
+  {
+    if(i < nx)
+    {
+      dedendz[i][nz-1] = dedendz[i][nz-2];
+    }
+    if(i < nz)
+    {
+      dedendz[nx-1][i] = dedendz[nx-2][i];
+    }
+  }
 }
 
 
@@ -450,25 +465,25 @@ void cbet()
 //use two threads here
 void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
 {
-//  printf("%f\n", z_init);
+
   //ofstream valTrack("ValTrack.txt");
   //Launch_Ray_XZ Array Declaration
-  double myx[nt] = {0};
-  double mytime[nt] = {0};
+  double* myx= new double[nt]{0.0};
+  double* mytime = new double[nt]{0.0};
   span(mytime, dt, nt*dt, nt);
-  double myz[nt] = {0};
-  double mykx[nt]={0};
-  double mykz[nt]= {0};
-  double myvx[nt]={0};
-  double myvz[nt]= {0};
-  double amplitude_norm[nt]= {0};
-  double markingx[nt] = {0};
-  double markingz[nt] = {0};
+  double* myz = new double[nt]{0.0};
+  double* mykx=new double[nt]{0.0};
+  double* mykz= new double[nt]{0.0};
+  double* myvx=new double[nt]{0.0};
+  double* myvz= new double[nt]{0.0};
+  double* amplitude_norm= new double[nt]{0.0};
+  double* markingx = new double[nt]{0.0};
+  double* markingz = new double[nt]{0.0};
   //double xbounds[nt];
   //double zbounds[nt];
   //double xbounds_double[nt];
   //double zbounds_double[nt];
-  double nuei[nt] = {0};
+  double* nuei = new double[nt]{0.0};
   //Initializing Arrays
   for(int i = 0; i < nt; i++)
   {
@@ -476,44 +491,48 @@ void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
   }
   myx[0] = x_init;
   myz[0] = z_init;
+  cout << scientific;
   for(int i = 0;i < nx;i++)
-  {
-    if(myx[0]- x[i][0] <= (0.5 +1.0e-10)*dx && myx[0]-x[i][0]>=-1*(0.5+1e-10)*dx)
+{
+  /*
+
+
+    if(fabs(myx[0]- x[i][0]) <= fabs((0.5 +1.0e-10)*dx))
     {
+      printf("%s%lf\n","myx-x:", myx[0]- x[i][0]);
+      printf("%s%lf\n", "comparison num: " ,(0.5 +1.0e-10)*dx);
+    }
+
+    if(myx[0]- x[i][0] == -1*(0.5 +1.0e-10)*dx)
+    {
+      printf("%s\n", "Hello There");
+      printf("%s%lf\n","myx-x:", myx[0]- x[i][0]);
+      printf("%s%lf\n", "comparison num: " ,(0.5 +1.0e-10)*dx);
+    }
+*/
+    if( myx[0] - x[i][0] <= (0.5+1.0e-10)*dx && myx[0] - x[i][0] >= -(0.5+1.0e-10)*dx )
+  {
       thisx_0=i;
+      //cout << "thisx_0: " << thisx_0<<endl;
       thisx_00=i;
       break;
     }
   }
   for(int i = 0;i < nz;i++)
   {
-    if(myz[0]-z[0][i] <= (0.5 +1.0e-10)*dx && myz[0]-z[0][i]>=-1*(0.5+1e-10)*dz)
+    if(myz[0] - z[0][i] <= (0.5+1.0e-10)*dz && myz[0] - z[0][i] >= -(0.5+1.0e-10)*dz )
     {
       thisz_0=i;
       thisz_00=i;
       break;
     }
   }
-  double k = sqrt((pow(omega,2.0)-pow(*(wpe[thisx_0]+thisz_0),2.0)/pow(c,2.0)));
+  double k = sqrt(((pow(omega,2.0)-pow(wpe[thisx_0][thisz_0],2.0))/pow(c,2.0)));
   double knorm = sqrt(pow(kx_init,2.0)+pow(kz_init,2.0));
   mykx[0]=(kx_init/knorm)*k;			// Normalized value for the ray's initial k_x
   mykz[0]=(kz_init/knorm)*k;			// Normalized value for the ray's initial k_z
   myvx[0] = pow(c,2.0)*mykx[0]/omega;                   // v_group, group velocity (dw/dk) from D(k,w).
   myvz[0] =  pow(c,2.0)*mykz[0]/omega;
-/*
-  cout <<  "omega: " << omega << "\n";
-  cout << "wpe[thisx_0][thisz_0]: " << wpe[thisx_0][thisz_0] << "\n";
-  cout << "thisz_0: " << thisz_0 << "\n";
-  cout <<  "thisx_0: " << thisx_0 << "\n";
-  cout << "x_init: " << x_init << "\n";
-  cout << "z_init: " << z_init << "\n";
-  cout << "kx_init: " << kx_init << "\n";
-  cout << "kz_init: " << kz_init << "\n";
-  cout <<  "MyKX[0]: " << mykx[0] << "\n";
-  cout << "MyKZ[0]: " << mykz[0] << "\n";
-  cout << "MyVX[0]: " << myvx[0] << "\n";
-  cout << "MyVZ[0]: " << myvz[0] << "\n";
-*/
   markingx[0] = thisx_0;
   markingz[0] = thisz_0;
 //  xbounds[0] = myx[0];
@@ -522,80 +541,91 @@ void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
   int numcrossing = 1;
   for(int i = 1; i < nt;i++)
   {
-    myvz[i] = myvz[i-1] - pow(c,2.0)/(2.0*ncrit)*(*(dedendz[thisx_0])+thisz_0)*dt;
-    myvx[i] = myvx[i-1] - pow(c,2.0)/(2.0*ncrit)*(*(dedendx[thisx_0])+thisz_0)*dt;
+    myvz[i] = myvz[i-1] - pow(c,2.0)/(2.0*ncrit)*dedendz[thisx_0][thisz_0]*dt;
+    myvx[i] = myvx[i-1] - pow(c,2.0)/(2.0*ncrit)*dedendx[thisx_0][thisz_0]*dt;
     myx[i] = myx[i-1] + myvx[i]*dt;
-    myz[i] = myz[i-1] + myvx[i]*dt;
-    int search_index_x = 1;
-    int search_index_z = 1;
-        int thisx_m = fmax(0, thisx_0-search_index_x);
-        int thisx_p = fmin(nx, thisx_0+search_index_x);
-        int thisz_m = fmax(0, thisz_0-search_index_z);
-        int thisz_p = fmin(nz, thisz_0+search_index_z);
-        /*
-        valTrack <<  "1. thisx_m: " << thisx_m << "\n";
-        valTrack <<  "1. thisx_p: " << thisx_p << "\n";
-        valTrack <<  "1. thisz_m: " << thisz_m << "\n";
-        valTrack <<  "1. thisz_p: " << thisz_p << "\n";
-        */
-        for(int j = thisx_m; j < thisx_p;j++)
-        {
-          if ( myx[i] - *(x[j]) <= (0.5+1.0e-10)*dx && myx[i] - *(x[j]) >= -(0.5+1.0e-10)*dx ){
-                          thisx = j;
-                          break;
-              }
-        }
-      //  valTrack << "thisx: " << thisx << "\n";
+    myz[i] = myz[i-1] + myvz[i]*dt;
+    /*
+    cout << "ncrit: " << ncrit<<endl;
+    cout << "dt: " << dt<<endl;
+    cout << "pow(c,2.0)/(2.0*ncrit)*dedendx[thisx_0][thisz_0]*dt: " << pow(c,2.0)/(2.0*ncrit)*dedendx[thisx_0][thisz_0]*dt<<endl;
+    cout << "dedendx[thisx_0][thisz_0]: " << dedendx[thisx_0][thisz_0] << endl;
+    cout << "dedendz[thisx_0][thisz_0]: " << dedendz[thisx_0][thisz_0] << endl;
+    cout << "myvx[i]: " << myvx[i] << endl;
+    cout << "myx[i]: " << myx[i] << endl;
+    cout << "myvz[i]: " << myvz[i] << endl;
+    cout << "myz[i]: " << myz[i] << endl;
+    cout << endl;
+*/
+    //cout <<"myx[i]: "<< myx[i] <<" ::myz[i]: "<< myz[i] <<" ::myvz[i]: "<< myvz[i] <<" ::myvx[i]: "<< myvx[i]<<endl;
+    int search_index_x = nx;
+    int search_index_z = nz;
+    int thisx_m = fmax(0, thisx_0-search_index_x);
+    int thisx_p = fmin(nx, thisx_0+search_index_x);
+    int thisz_m = fmax(0, thisz_0-search_index_z);
+    int thisz_p = fmin(nz, thisz_0+search_index_z);
+    /*
+    valTrack <<  "1. thisx_m: " << thisx_m << "\n";
+    valTrack <<  "1. thisx_p: " << thisx_p << "\n";
+    valTrack <<  "1. thisz_m: " << thisz_m << "\n";
+    valTrack <<  "1. thisz_p: " << thisz_p << "\n";
+    */
+    for(int j = thisx_m; j < thisx_p;j++)
+    {
+      if ( myx[i] - *(x[j]) <= (0.5+1.0e-10)*dx && myx[i] - *(x[j]) >= -(0.5+1.0e-10)*dx )
+      {
+        thisx = j;
+        break;
+      }
+    }
+//  valTrack << "thisx: " << thisx << "\n";
 
 
-        for(int j = thisz_m; j < thisz_p; j++)
-        {
-          if ( myz[i] - *(z[j]) <= (0.5+1.0e-10)*dz && myz[i] - *(z[j]) >= -(0.5+1.0e-10)*dz ){
-                          thisz = j;
-                          break;
-              }
-        }
-        double linez[2]={myz[i-1], myz[i]};
-        double linex[2]={myx[i-1], myx[i]};
-        int lastx = 10000;
-        int lastz = 10000;
-        thisx_m = fmax(0, thisx_0-search_index_x);
-        thisx_p = fmin(nx, thisx_0+search_index_x);
-        thisz_m = fmax(0, thisz_0-search_index_z);
-        thisz_p = fmin(nz, thisz_0+search_index_z);
-        /*
-        valTrack <<  "2. thisx_m: " << thisx_m << "\n";
-        valTrack <<  "2. thisx_p: " << thisx_p << "\n";
-        valTrack <<  "2. thisz_m: " << thisz_m << "\n";
-        valTrack <<  "2. thisz_p: " << thisz_p << "\n";
-        */
+    for(int j = thisz_m; j < thisz_p; j++)
+    {
+      if ( myz[i] - *(z[j]) <= (0.5+1.0e-10)*dz && myz[i] - *(z[j]) >= -(0.5+1.0e-10)*dz )
+      {
+        thisz = j;
+        break;
+      }
+    }
+    double linez[2]={myz[i-1], myz[i]};
+    double linex[2]={myx[i-1], myx[i]};
+    int lastx = 10000;
+    int lastz = 10000;
+    thisx_m = fmax(0, thisx_0-search_index_x);
+    thisx_p = fmin(nx, thisx_0+search_index_x);
+    thisz_m = fmax(0, thisz_0-search_index_z);
+    thisz_p = fmin(nz, thisz_0+search_index_z);
+    /*
+    valTrack <<  "2. thisx_m: " << thisx_m << "\n";
+    valTrack <<  "2. thisx_p: " << thisx_p << "\n";
+    valTrack <<  "2. thisz_m: " << thisz_m << "\n";
+    valTrack <<  "2. thisz_p: " << thisz_p << "\n";
+    */
 
-        for(int j = thisx_m; j < thisx_p;j++)
+    for(int j = thisx_m; j < thisx_p;j++)
+    {
+      double currx = *(x[j])-dx/2;
+      if((myx[i] > currx && myx[i-1] <= currx) || (myx[i] < currx && myx[i-1] >= currx))
+      {
+        double crossx =interp(linex, linez, currx, 2);
+        if(abs(crossx-lastz)>1.0e-20)
         {
-          double currx = *(x[j])-dx/2;
-          if((myx[i] > currx && myx[i-1] <= currx) || (myx[i] < currx && myx[i-1] >= currx))
+          *(*(ints[beam]+raynum)+numcrossing)=uray[i];
+          *(*(crossesx[beam]+raynum)+numcrossing) = currx;
+          *(*(crossesz[beam]+raynum)+numcrossing) = crossx;
+          if(myx[i] <= xmax+dx/2&&myx[i] >=xmin-dx/2)
           {
-
-            double crossx =interp(linex, linez, currx, 2);
-            if(abs(crossx-lastz)>1.0e-20)
-            {
-              *(*(ints[beam]+raynum)+numcrossing)=uray[i];
-              *(*(crossesx[beam]+raynum)+numcrossing) = currx;
-              *(*(crossesz[beam]+raynum)+numcrossing) = crossx;
-
-
-              if(myx[i] <= xmax+dx/2&&myx[i] >=xmin-dx/2)
-              {
-                **(*(boxes[beam]+raynum)+numcrossing) = thisx;
-                *(*(*(boxes[beam]+raynum)+numcrossing) + 1)= thisz;
-              }
-
-              lastx = currx;
-              numcrossing += 1;
-              break;
-            }
+            **(*(boxes[beam]+raynum)+numcrossing) = thisx;
+            *(*(*(boxes[beam]+raynum)+numcrossing) + 1)= thisz;
           }
+          lastx = currx;
+          numcrossing += 1;
+          break;
         }
+      }
+    }
         for(int j = thisz_m; j < thisz_p;j++)
         {
           double currz = *(x[j])-dz/2;
@@ -760,33 +790,51 @@ void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
       mytime[i] = dt*i; // Sets the time, equal to the time step multiplied by the number of time steps
 
       // This will cause the code to stop following the ray once it escapes the extent of the plasma:
-      if ( (myx[i] < (xmin-(dx/2.0))) | (myx[i] > (xmax+(dx/2.0))))
+      if ( (myx[i] < (xmin-(dx/2.0))) || (myx[i] > (xmax+(dx/2.0))))
       {          // the "|" means "or" (symbol above the return key)
-        int finalt = i-1;
-        double* amp_norm = new double[finalt];
-        double* rayx = new double[finalt];
-        double* rayz = new double[finalt];
+        finalt = i-1;
+        delete [] rayx;
+        delete [] rayz;
+        rayx = new double[finalt]{0.0};
+        rayz = new double[finalt]{0.0};
+        amp_norm = new double[finalt]{0.0};
         for(int j = 0; j < finalt;j++)
         {
           amp_norm[j] = amplitude_norm[j];
           rayx[j] = myx[j];
           rayz[j] = myz[j];
         }
+        delete [] amp_norm;
         break;                  // "breaks" out of the i loop once the if condition is satisfied
-      } else if ( (myz[i] < (zmin-(dz/2.0))) | (myz[i] > (zmax+(dz/2.0)))){
+      } else if ( (myz[i] < (zmin-(dz/2.0))) || (myz[i] > (zmax+(dz/2.0)))){
            // the "|" means "or" (symbol above the return key)
-        int finalt = i-1;
-        double amp_norm[finalt] = {0.0};
-        double rayx[finalt]= {0.0};
-        double rayz[finalt]= {0.0};
+        finalt = i-1;
+        amp_norm = new double[finalt]{0.0};
+        delete [] rayx;
+        delete [] rayz;
+        rayx = new double[finalt]{0.0};
+        rayz = new double[finalt]{0.0};
         for(int j = 0; j < finalt;j++)
         {
           amp_norm[j] = amplitude_norm[j];
           rayx[j] = myx[j];
           rayz[j] = myz[j];
         }
+        delete [] amp_norm;
+        break;
     }
 }
+delete [] myx;
+delete [] mytime;
+delete [] myz;
+delete [] mykx;
+delete [] mykz;
+delete [] myvx;
+delete [] nuei;
+delete [] myvz;
+delete [] amplitude_norm;
+delete [] markingx;
+delete [] markingz;
 }
 void launchRays()
 {
@@ -797,6 +845,20 @@ void launchRays()
   double kz0[nrays];
   double phase_x[nrays];
   double pow_x[nrays];
+  double*** mysaved_x[nt]; //nt, nrays, nbeams
+  double*** mysaved_z[nt]; //nt, nrays, nbeams
+  for(int i = 0; i < nt; i++)
+  {
+    mysaved_x[i] = new double**[nrays];
+    mysaved_z[i] = new double**[nrays];
+    for(int j = 0; j < nrays; j++)
+    {
+      mysaved_x[i][j] = new double*[nbeams];
+      mysaved_z[i][j] = new double*[nbeams];
+    }
+  }
+
+
   span(phase_x,beam_min_z, beam_max_z, nrays);
   for(int i = 0; i < nrays; i++)
   {
@@ -805,8 +867,8 @@ void launchRays()
     pow_x[i] = exp(-1*pow(pow(phase_x[i]/sigma,2.0),4.0/2.0));
     phase_x[i] += offset;
   }
-  double finalts[nrays][nbeams];
-  int beam = 1;
+  int finalts[nrays][nbeams];
+  int beam = 0;
   cout << "BEAMNUM is" << beam << endl;
   span(z0, beam_min_z, beam_max_z, nrays);
   cout <<  scientific;
@@ -814,18 +876,25 @@ void launchRays()
   for(int i = 0; i < nrays; i++)
   {
     x0[i] = xmin-(dt/courant_mult*c*0.5);
-    z0[i] += offset - (dz/2) - (dt/courant_mult*c*0.5);
+    z0[i] += +offset-(dz/2)-(dt/courant_mult*c*0.5);
   }
   for(int i = 0; i < nrays;i++)
   {
     raynum = i;
-    cout<< "URAY INTERP_____________________" << endl;
-    uray[0] = uray_mult*interp(phase_x, pow_x, z0[i], nrays);
-    //printf("%s%lf\n", "z0[i]", z0[i]);
-    //printf("%s%lf\n", "Interp: ", interp(phase_x, pow_x, z0[i], nrays));
+    //cout<< "URAY INTERP_____________________" << endl;
+    double interpNum = interp(phase_x, pow_x, z0[i], nrays);
+    uray[0] = uray_mult*interpNum;
+  //  printf("%s%lf\n", "z0[i]", z0[i]);
+    //cout << "Interp: " << interpNum << endl;
     injected += uray[0];
     launch_ray_XZ(x0[i],z0[i],kx0[i],kz0[i]);
+  //  printf("%s%d\n", "finalt: ", finalt);
     *(finalts[i] + beam) = finalt;
+    for(int j = 0; j < finalt; j++)
+    {
+      mysaved_x[j][i][beam] = rayx;
+      mysaved_z[j][i][beam] = rayz;
+    }
     //cout << kx0[i] << " || " << kz0[i] << '\n';
 
   }
@@ -833,7 +902,7 @@ void launchRays()
   {
     phase_x[i] -= offset;
   }
-  beam = 2;
+  beam = 1;
   cout << "BEAMNUM is" << beam << endl;
   span(x0, beam_min_z, beam_max_z, nrays);
   for(int i = 0; i < nrays;i++)
@@ -846,28 +915,58 @@ void launchRays()
     uray[0] = uray_mult*interp(phase_x, pow_x, x0[i], nrays);
     injected += uray[0];
     launch_ray_XZ(x0[i],z0[i],kx0[i],kz0[i]);
-    *(finalts[i] + beam) = finalt;
-  }
-  /*
-for(int i = 0; i < nx; i++)
-{
-  for(int j = 0; j < nz; j++)
-  {
-    for(int m = 0; m < numstored; m++)
+    finalts[i][beam] = finalt;
+    for(int j = 0; j < finalt; j++)
     {
-      for(int p = 0; p < nbeams; p++)
-      {
-        if(marked[i][j][m][p] != 0)
-        {
-          cout << "Marked[i][j][m][p]: " << marked[i][j][m][p] << "|| i: " << i << "|| j: " << j << "|| m: " << m <<"|| p: " << p << endl;
-        }
-      }
+      mysaved_x[j][i][beam] = rayx;
+      mysaved_z[j][i][beam] = rayz;
     }
+  }
+  cout << "nbeams: " << nbeams << endl;
+printf("%s\n", "Got past launching the rays");
+/*
+for(int i = 0; i < nrays; i++)
+{
+  for(int j = 0; j < nbeams; j++)
+  {
+    cout << "Finalts" << finalts[i][j] << endl;
   }
 }
 */
-printf("%s\n", "Got past launching the rays");
 int if_intersection_diagnostics = 0;
+vector<double> xplot1;
+vector<double> zplot1;
+vector<double> xplot2;
+vector<double> zplot2;
+plt::figure();
+for(int i = 0; i < nrays; i++)
+{
+  for(int n = 0; n < finalts[i][0]; n++)
+  {
+    int xt = sizeof(mysaved_x[n][i][1])/sizeof(mysaved_x[n][i][0][0]);
+    int zt = sizeof(mysaved_x[n][i][1])/sizeof(mysaved_x[n][i][0][0]);
+    xplot1.insert(xplot1.end(), mysaved_x[n][i][0], mysaved_x[n][i][0] + xt);
+    zplot1.insert(zplot1.end(),mysaved_z[n][i][0], mysaved_z[n][i][0] + zt);
+  }
+  for(int n = 0; n < finalts[i][1]; n++)
+  {
+    int xt = sizeof(mysaved_x[n][i][1])/sizeof(mysaved_x[n][i][1][0]);
+    int zt = sizeof(mysaved_x[n][i][1])/sizeof(mysaved_x[n][i][1][0]);
+    xplot2.insert(xplot2.end(), mysaved_x[n][i][1], mysaved_x[n][i][1] + xt);
+    zplot2.insert(zplot2.end(), mysaved_z[n][i][1], mysaved_z[n][i][1] + zt);
+  }
+}
+cout << "XPlot1 Size: " << xplot1.size() <<endl;
+cout << "ZPlot1 Size: " << zplot1.size() <<endl;
+cout << "XPlot2 Size: " << xplot2.size() <<endl;
+cout << "ZPlot2 Size: " << zplot2.size() <<endl;
+plt::plot(xplot1,zplot1, "ro");
+
+
+//plt::plot(xplot2,zplot2);
+plt::show();
+
+printf("%s\n", "Hello");
 for(int i = 0; i < nx; i++)
 {
   for(int j = 0; j < nz; j++)

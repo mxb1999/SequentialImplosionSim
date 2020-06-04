@@ -40,10 +40,7 @@ double cat20[3];
 double injected = 0.0;
 double intensity = 2.0e15;
 double uray_mult = intensity*(courant_mult)*pow(double(rays_per_zone),-1.0);
-double rayx;
-double rayz;
-double finalt;
-double amp_norm;
+
 double timeKeep;
 int beam;
 int raynum;
@@ -55,11 +52,15 @@ int thisx_0;
 int thisx_00;
 int thisz_0;
 int thisz_00;
+int finalt;
 double ztarg;
 double slope;
 double xtarg;
 //Pointers for necessary arrays used across multiple functions
 double* uray;
+double* rayx;
+double* rayz;
+double* amp_norm;
 double** intersections; //nx nz
 int**** marked; //nx nz numstored nbeams
 double** dedendx; //nx nz
