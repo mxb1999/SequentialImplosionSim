@@ -48,7 +48,7 @@ double interp(double* xArr, double* yArr, double target, int xSize)
   }
   int index = binSearch(target, xArr, 0, xSize);
   //out << "index: " << index << endl;
-  double m = (yArr[index]-yArr[index+1])/(xArr[index]-xArr[index+1]);
+  double m = (yArr[index+1]-yArr[index])/(xArr[index+1]-xArr[index]);
   double b = yArr[index]-m*xArr[index];
   //cout << "xArr[index]: " << xArr[index] << " || yArr[index]: "  << yArr[index] << endl;
   //cout << "xArr[index+1]: " << xArr[index+1] << " || yArr[index+1]: "  << yArr[index+1] << endl;
@@ -76,3 +76,13 @@ int compareDub(double a, double b)
   }
   return -1;
 };
+
+
+void span(double* target, double start, double stop, int num)
+{
+  float increment = (stop-start)/(num - 1);
+  for(int i = 0; i < num; i++)
+  {
+    target[i] = start + (increment * i);
+  }
+}

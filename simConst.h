@@ -28,7 +28,7 @@ const double Ti_eV = 1.0e3;
 const double iaw = 0.2;                      // ion-acoustic wave energy-damping rate (nu_ia/omega_s)!!
 const double kb = 1.3806485279e-16;   //Boltzmann constant in erg/K
 const double kb2 = 1.3806485279e-23;   //Boltzmann constant in J/K
-
+const int ncrossings = nx*3;
 const double freq = c/lambda;		// frequency of light, in Hz
 const double omega = 2*pi*freq;	// frequency of light, in rad/s
 const double ncrit = 1e-6*(pow(omega,2.0)*me*e0/pow(ec,2.0));

@@ -7,3 +7,4 @@ int binSearch(double tgt, double* in, int index, int size);
 double interp(double* xArr, double* yArr, double target, int xSize);
 bool areEqual(double a, double b);
 int compareDub(double a, double b);
+void span(double* target, double start, double stop, int num);
