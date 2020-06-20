@@ -37,6 +37,7 @@ int determineType(string type)
 };
 void writeArr(void* arr, int type, H5File* store, string name, int dimnum, int* dimlist)
 {
+  cout << name << endl;
   int prod = 1;
   for(int i = 0; i < dimnum;i++)
   {
@@ -61,13 +62,11 @@ void writeArr(void* arr, int type, H5File* store, string name, int dimnum, int* 
     {
       case 1:
       {
-        cout << name << " 1 Dim " << endl;
         arrData->write(arr, PredType::NATIVE_DOUBLE);
         break;
       }
       case 2:
       {
-        cout << name << " 2 Dims " << endl;
         double** arrcast = (double**)arr;
         for(int i = 0; i < dimlist[0];i++)
         {
@@ -81,7 +80,6 @@ void writeArr(void* arr, int type, H5File* store, string name, int dimnum, int* 
       }
       case 3:
       {
-        cout << name << " 3 Dims " << endl;
         double*** arrcast = (double***)arr;
         for(int i = 0; i < dimlist[0];i++)
         {
@@ -93,13 +91,11 @@ void writeArr(void* arr, int type, H5File* store, string name, int dimnum, int* 
             }
           }
         }
-        printf("%s\n", "Hello");
         arrData->write(copy, PredType::NATIVE_DOUBLE);
         break;
       }
       case 4:
       {
-        cout << name << " 4 Dims " << endl;
         double**** arrcast = (double****)arr;
         for(int i = 0; i < dimlist[0];i++)
         {
@@ -134,13 +130,11 @@ void writeArr(void* arr, int type, H5File* store, string name, int dimnum, int* 
     {
       case 1:
       {
-        cout << name << " 1 Dim " << endl;
         arrData->write(arr, PredType::NATIVE_INT);
         break;
       }
       case 2:
       {
-        cout << name << " 2 Dims " << endl;
         int** arrcast = (int**)arr;
         for(int i = 0; i < dimlist[0];i++)
         {
@@ -154,7 +148,6 @@ void writeArr(void* arr, int type, H5File* store, string name, int dimnum, int* 
       }
       case 3:
       {
-        cout << name << " 3 Dims " << endl;
         int*** arrcast = (int***)arr;
         for(int i = 0; i < dimlist[0];i++)
         {
@@ -166,13 +159,11 @@ void writeArr(void* arr, int type, H5File* store, string name, int dimnum, int* 
             }
           }
         }
-        printf("%s\n", "Hello");
         arrData->write(copy, PredType::NATIVE_INT);
         break;
       }
       case 4:
       {
-        cout << name << " 4 Dims " << endl;
         int**** arrcast = (int****)arr;
         for(int i = 0; i < dimlist[0];i++)
         {
@@ -206,6 +197,8 @@ void updateH5()
   writeArr(x, 0, store, "x", 1, new int[1]{nx});
   writeArr(z, 0, store, "z", 1, new int[1]{nz});
   writeArr(eden, 0, store, "eden", 2, new int[2]{nx,nz});
+  writeArr(edenplot, 0, store, "eden_ncrit", 2, new int[2]{nx,nz});
+  writeArr(edepplot, 0, store, "total_intensity", 2, new int[2]{nx,nz});
   writeArr(i_b1, 0, store, "i_b1", 2, new int[2]{nx,nz});
   writeArr(i_b2, 0, store, "i_b2", 2, new int[2]{nx,nz});
   writeArr(i_b2_new, 0, store, "i_b2_new", 2, new int[2]{nx,nz});

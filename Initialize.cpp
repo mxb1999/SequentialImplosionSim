@@ -2,7 +2,7 @@
 
 
 using namespace std;
-
+//dynamically allocate and initialize the arrays
 void initialize()
 {
   uray = new double[nt];
@@ -10,6 +10,7 @@ void initialize()
   {
     uray[i] = 1.0;
   }
+  //dynamic allocation (using pointers to access arrays so the stack is not filled)
   intersections = new double*[nx]; //nx nz
   marked = new int***[nx]; //nx nz numstored nbeams
   dedendx = new double*[nx]; //nx nz
@@ -39,6 +40,12 @@ void initialize()
   crossesz = new double**[nbeams]; //nbeams nrays ncrossings
   crossesx = new double**[nbeams]; //nbeams nrays ncrossings
   ints = new int**[nbeams]; //nbeams nrays ncrossings
+  myx= new double[nt]{0.0};
+  myz = new double[nt]{0.0};
+  mykx=new double[nt]{0.0};
+  mykz= new double[nt]{0.0};
+  myvx=new double[nt]{0.0};
+  myvz= new double[nt]{0.0};
   for(int i = 0; i < nx+2; i++)
   {
     if(i < nx)
@@ -109,7 +116,8 @@ void initialize()
   }
   cout << "Setting initial conditions for ray tracker..." <<endl;
   cout << "nrays per beam is"<< nrays <<endl;
-  //plt::figure(1);
+
+  //Calculating the initial energy density, wpe, and machnum values
   span(x, xmin, xmax, nx);
   span(z, zmin, zmax, nz);
   for(int i = 0; i < nx;i++)
@@ -121,7 +129,6 @@ void initialize()
       machnum[i][j] = fmax(0.0,(((-0.4)-(-2.4))/(xmax-xmin))*(x[i]-xmin))+(-2.4);
     }
   }
-  printf("%s\n", "Initialize Check 2");
 
   for(int i = 0; i < nx-1; i++)
   {
@@ -131,15 +138,16 @@ void initialize()
       dedendz[i][j] = (eden[i][j+1]-eden[i][j])/(z[j+1]-z[j]);
     }
   }
-  for(int i = 0; i < max(nx,nz);i++)
+  for(int i = 0; i < fmax(nx,nz);i++)
   {
     if(i < nx)
     {
       dedendz[i][nz-1] = dedendz[i][nz-2];
+
     }
     if(i < nz)
     {
-      dedendz[nx-1][i] = dedendz[nx-2][i];
+      dedendx[nx-1][i] = dedendx[nx-2][i];
     }
   }
   //plt::plot(xplot, zplot);

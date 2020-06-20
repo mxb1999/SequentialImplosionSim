@@ -1,0 +1,19 @@
+============================
+Test log for vol 
+============================
+Testing basic Virtual Object Layer (VOL) functionality.
+Testing VOL registration                                               PASSED
+Testing Native VOL connector initialization                            PASSED
+Testing Basic VOL file operations                                      PASSED
+Testing Basic VOL group operations                                     PASSED
+Testing Basic VOL dataset operations                                   PASSED
+Testing Basic VOL attribute operations                                 PASSED
+Testing Basic VOL object operations                                    PASSED
+Testing Basic VOL link operations                                      PASSED
+Testing Basic VOL datatype operations                                  PASSED
+All Virtual Object Layer (VOL) tests passed.
+0.01user 0.00system 0:00.01elapsed 105%CPU (0avgtext+0avgdata 9084maxresident)k
+0inputs+56outputs (0major+2358minor)pagefaults 0swaps
+
+Finished testing vol 
+============================

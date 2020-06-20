@@ -3,9 +3,9 @@
 #include <iostream>
 
 
-
-const int nx=201; const float xmin = -5.0e-4; const float xmax=5.0e-4; const float dx = (xmax-xmin)/(nx-1);
-const int nz=201; const float zmin = -5.0e-4; const float zmax=5.0e-4; const float dz = (zmax-zmin)/(nz-1);
+//defining constants needed throughout the simulation
+const int nx=15; const float xmin = -5.0e-4; const float xmax=5.0e-4; const float dx = (xmax-xmin)/(nx-1);
+const int nz=15; const float zmin = -5.0e-4; const float zmax=5.0e-4; const float dz = (zmax-zmin)/(nz-1);
 const int nbeams = 2;
 const int rays_per_zone = 5 ;
 const double c = 29979245800.0;
@@ -38,4 +38,3 @@ const float courant_mult = 0.2; // 0.37 // 0.25 // 0.36 // 0.22;
 const double dt=courant_mult*fmin(dx,dz)/c;
 const int nt=int(pow(courant_mult,-1.0)*fmax(nx,nz)*2.0);
 const int numstored = nx*5;
-/*Defining Constants*/

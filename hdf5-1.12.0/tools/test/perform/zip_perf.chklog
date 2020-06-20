@@ -1,0 +1,9 @@
+============================
+Test log for zip_perf 
+============================
+No compression IO performance because zlib was not configured
+0.01user 0.00system 0:00.01elapsed 123%CPU (0avgtext+0avgdata 3356maxresident)k
+0inputs+0outputs (0major+1793minor)pagefaults 0swaps
+
+Finished testing zip_perf 
+============================

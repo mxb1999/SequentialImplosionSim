@@ -1,0 +1,568 @@
+============================
+test_usecases.sh  Test Log
+============================
+use_disable_mdc_flushes                                                  PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_disable_mdc_flushes.h5
+    ===Parameters shown===
+    Creating skeleton data file for testing H5Odisable_mdc_flushes()...
+    File created.
+    writing to the file
+    Dataset has disabled mdc flushes.
+    dataset rank 3, dimensions 0 x 256 x 256
+    All passed
+use_disable_mdc_flushes -y 3                                             PASSED
+    ===Parameters used:===
+    chunk dims=(3, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_disable_mdc_flushes.h5
+    ===Parameters shown===
+    Creating skeleton data file for testing H5Odisable_mdc_flushes()...
+    File created.
+    writing to the file
+    Dataset has disabled mdc flushes.
+    dataset rank 3, dimensions 0 x 256 x 256
+    All passed
+use_disable_mdc_flushes -n 3000                                          PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=3000
+    using SWMR mode=yes(1)
+    data filename=use_disable_mdc_flushes.h5
+    ===Parameters shown===
+    Creating skeleton data file for testing H5Odisable_mdc_flushes()...
+    File created.
+    writing to the file
+    Dataset has disabled mdc flushes.
+    dataset rank 3, dimensions 0 x 256 x 256
+    All passed
+use_disable_mdc_flushes -n 5000                                          PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=5000
+    using SWMR mode=yes(1)
+    data filename=use_disable_mdc_flushes.h5
+    ===Parameters shown===
+    Creating skeleton data file for testing H5Odisable_mdc_flushes()...
+    File created.
+    writing to the file
+    Dataset has disabled mdc flushes.
+    dataset rank 3, dimensions 0 x 256 x 256
+    All passed
+twriteorder                                                              PASSED
+    blocksize = 1024
+    part_size = 2048
+    nlinkedblock = 512
+    launch = 0
+    Creating skeleton data file for test...
+    File created.
+    1977: launch reader process
+    All passed
+twriteorder -b 1000                                                      PASSED
+    blocksize = 1000
+    part_size = 2048
+    nlinkedblock = 512
+    launch = 0
+    Creating skeleton data file for test...
+    File created.
+    2011: launch reader process
+    All passed
+twriteorder -p 3000                                                      PASSED
+    blocksize = 1024
+    part_size = 3000
+    nlinkedblock = 512
+    launch = 0
+    Creating skeleton data file for test...
+    File created.
+    2044: launch reader process
+    All passed
+twriteorder -n 2000                                                      PASSED
+    blocksize = 1024
+    part_size = 2048
+    nlinkedblock = 2000
+    launch = 0
+    Creating skeleton data file for test...
+    File created.
+    2077: launch reader process
+    All passed
+twriteorder -l w                                                         PASSED
+    launch = 1
+    blocksize = 1024
+    part_size = 2048
+    nlinkedblock = 512
+    launch = 1
+    Creating skeleton data file for test...
+    File created.
+    All passed
+twriteorder -l r                                                         PASSED
+    launch = 2
+    blocksize = 1024
+    part_size = 2048
+    nlinkedblock = 512
+    launch = 2
+    2129: launch reader process
+twriteorder test passed.
+./use_append_chunk                                                       PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_append_chunk.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2175: launch reader process
+    dataset rank 3, dimensions 4 x 256 x 256
+    reading planes 0 to 4
+    reading planes 4 to 12
+    reading planes 12 to 24
+    reading planes 24 to 38
+    reading planes 38 to 48
+    reading planes 48 to 54
+    reading planes 54 to 58
+    reading planes 58 to 61
+    reading planes 61 to 63
+    reading planes 63 to 64
+    reading planes 64 to 65
+    reading planes 65 to 66
+    reading planes 66 to 67
+    reading planes 67 to 69
+    reading planes 69 to 71
+    reading planes 71 to 73
+    reading planes 73 to 75
+    reading planes 75 to 77
+    reading planes 77 to 79
+    reading planes 79 to 81
+    reading planes 81 to 83
+    reading planes 83 to 85
+    reading planes 85 to 87
+    reading planes 87 to 89
+    reading planes 89 to 91
+    reading planes 91 to 93
+    reading planes 93 to 96
+    reading planes 96 to 98
+    reading planes 98 to 101
+    reading planes 101 to 103
+    reading planes 103 to 105
+    reading planes 105 to 108
+    reading planes 108 to 110
+    reading planes 110 to 113
+    reading planes 113 to 115
+    reading planes 115 to 117
+    reading planes 117 to 119
+    reading planes 119 to 122
+    reading planes 122 to 125
+    reading planes 125 to 128
+    reading planes 128 to 130
+    reading planes 130 to 131
+    reading planes 131 to 132
+    reading planes 132 to 133
+    reading planes 133 to 134
+    reading planes 134 to 135
+    reading planes 135 to 136
+    reading planes 136 to 137
+    reading planes 137 to 138
+    reading planes 138 to 139
+    reading planes 139 to 140
+    reading planes 140 to 141
+    reading planes 141 to 142
+    reading planes 142 to 143
+    reading planes 143 to 144
+    reading planes 144 to 145
+    reading planes 145 to 146
+    reading planes 146 to 147
+    reading planes 147 to 148
+    reading planes 148 to 149
+    reading planes 149 to 150
+    reading planes 150 to 151
+    reading planes 151 to 152
+    reading planes 152 to 153
+    reading planes 153 to 154
+    reading planes 154 to 155
+    reading planes 155 to 156
+    reading planes 156 to 157
+    reading planes 157 to 158
+    reading planes 158 to 159
+    reading planes 159 to 160
+    reading planes 160 to 161
+    reading planes 161 to 162
+    reading planes 162 to 163
+    reading planes 163 to 164
+    reading planes 164 to 165
+    reading planes 165 to 166
+    reading planes 166 to 167
+    reading planes 167 to 168
+    reading planes 168 to 169
+    reading planes 169 to 170
+    reading planes 170 to 171
+    reading planes 171 to 172
+    reading planes 172 to 173
+    reading planes 173 to 174
+    reading planes 174 to 175
+    no new planes to read 
+    reading planes 175 to 256
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_append_chunk.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2161: continue as the writer process
+    dataset rank 3, dimensions 0 x 256 x 256
+    All passed
+./use_append_chunk -z 256                                                PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_append_chunk.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2211: launch reader process
+    dataset rank 3, dimensions 4 x 256 x 256
+    reading planes 0 to 4
+    reading planes 4 to 11
+    reading planes 11 to 18
+    reading planes 18 to 25
+    reading planes 25 to 32
+    reading planes 32 to 39
+    reading planes 39 to 47
+    reading planes 47 to 57
+    reading planes 57 to 69
+    reading planes 69 to 83
+    reading planes 83 to 99
+    reading planes 99 to 110
+    reading planes 110 to 116
+    reading planes 116 to 119
+    reading planes 119 to 121
+    reading planes 121 to 122
+    reading planes 122 to 123
+    reading planes 123 to 124
+    reading planes 124 to 125
+    reading planes 125 to 126
+    reading planes 126 to 127
+    reading planes 127 to 128
+    reading planes 128 to 129
+    reading planes 129 to 130
+    reading planes 130 to 131
+    reading planes 131 to 132
+    no new planes to read 
+    reading planes 132 to 256
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_append_chunk.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2197: continue as the writer process
+    dataset rank 3, dimensions 0 x 256 x 256
+    All passed
+./use_append_chunk -f /tmp/datatfile.1721                                PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=/tmp/datatfile.1721
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2246: launch reader process
+    dataset rank 3, dimensions 5 x 256 x 256
+    reading planes 0 to 5
+    reading planes 5 to 14
+    reading planes 14 to 23
+    reading planes 23 to 31
+    reading planes 31 to 38
+    reading planes 38 to 44
+    reading planes 44 to 49
+    reading planes 49 to 53
+    reading planes 53 to 57
+    reading planes 57 to 61
+    reading planes 61 to 65
+    reading planes 65 to 67
+    reading planes 67 to 68
+    reading planes 68 to 69
+    reading planes 69 to 70
+    reading planes 70 to 71
+    reading planes 71 to 72
+    reading planes 72 to 73
+    no new planes to read 
+    reading planes 73 to 256
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=/tmp/datatfile.1721
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2231: continue as the writer process
+    dataset rank 3, dimensions 0 x 256 x 256
+    All passed
+./use_append_chunk -l w                                                  PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_append_chunk.h5
+    launch part=Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2268: continue as the writer process
+    dataset rank 3, dimensions 0 x 256 x 256
+    All passed
+./use_append_chunk -l r                                                  PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_append_chunk.h5
+    launch part=Reader
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    2300: launch reader process
+    dataset rank 3, dimensions 256 x 256 x 256
+    reading planes 0 to 256
+./use_append_chunk -z 256 -y 5                                           PASSED
+    ===Parameters used:===
+    chunk dims=(5, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_append_chunk.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2347: launch reader process
+    dataset rank 3, dimensions 1 x 256 x 256
+    reading planes 0 to 1
+    reading planes 1 to 4
+    reading planes 4 to 5
+    reading planes 5 to 7
+    reading planes 7 to 9
+    reading planes 9 to 10
+    reading planes 10 to 11
+    reading planes 11 to 12
+    reading planes 12 to 14
+    reading planes 14 to 15
+    no new planes to read 
+    reading planes 15 to 256
+    ===Parameters used:===
+    chunk dims=(5, 256, 256)
+    dataset max dims=(18446744073709551615, 256, 256)
+    number of planes to write=256
+    using SWMR mode=yes(1)
+    data filename=use_append_chunk.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2333: continue as the writer process
+    dataset rank 3, dimensions 0 x 256 x 256
+    All passed
+./use_append_mchunks                                                     PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=use_append_mchunks.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2384: launch reader process
+    dataset rank 3, dimensions 0 x 512 x 512
+    no new planes to read 
+    reading planes 0 to 512
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=use_append_mchunks.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2370: continue as the writer process
+    dataset rank 3, dimensions 0 x 512 x 512
+    All passed
+./use_append_mchunks -z 256                                              PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=use_append_mchunks.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2421: launch reader process
+    dataset rank 3, dimensions 1 x 512 x 512
+    reading planes 0 to 1
+    reading planes 1 to 5
+    reading planes 5 to 11
+    reading planes 11 to 20
+    reading planes 20 to 32
+    reading planes 32 to 39
+    reading planes 39 to 44
+    reading planes 44 to 47
+    reading planes 47 to 49
+    reading planes 49 to 51
+    reading planes 51 to 52
+    reading planes 52 to 53
+    reading planes 53 to 54
+    reading planes 54 to 55
+    no new planes to read 
+    reading planes 55 to 512
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=use_append_mchunks.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2407: continue as the writer process
+    dataset rank 3, dimensions 0 x 512 x 512
+    All passed
+./use_append_mchunks -f /tmp/datatfile.1721                              PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=/tmp/datatfile.1721
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2458: launch reader process
+    dataset rank 3, dimensions 0 x 512 x 512
+    no new planes to read 
+    reading planes 0 to 512
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=/tmp/datatfile.1721
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2444: continue as the writer process
+    dataset rank 3, dimensions 0 x 512 x 512
+    All passed
+./use_append_mchunks -l w                                                PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=use_append_mchunks.h5
+    launch part=Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2480: continue as the writer process
+    dataset rank 3, dimensions 0 x 512 x 512
+    All passed
+./use_append_mchunks -l r                                                PASSED
+    ===Parameters used:===
+    chunk dims=(1, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=use_append_mchunks.h5
+    launch part=Reader
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    2514: launch reader process
+    dataset rank 3, dimensions 512 x 512 x 512
+    reading planes 0 to 512
+./use_append_mchunks -z 256 -y 5                                         PASSED
+    ===Parameters used:===
+    chunk dims=(5, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=use_append_mchunks.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2563: launch reader process
+    dataset rank 3, dimensions 0 x 512 x 512
+    no new planes to read 
+    reading planes 0 to 512
+    ===Parameters used:===
+    chunk dims=(5, 256, 256)
+    dataset max dims=(18446744073709551615, 512, 512)
+    number of planes to write=512
+    using SWMR mode=yes(1)
+    data filename=use_append_mchunks.h5
+    launch part=Reader/Writer
+    number of iterations=1 (not used yet)
+    ===Parameters shown===
+    Creating skeleton data file for test...
+    File created.
+    2548: continue as the writer process
+    dataset rank 3, dimensions 0 x 512 x 512
+    All passed
+All Use Case tests passed.
+2.56user 2.26system 0:11.41elapsed 42%CPU (0avgtext+0avgdata 27624maxresident)k
+16inputs+5152872outputs (0major+142629minor)pagefaults 0swaps
+
+Finished testing test_usecases.sh 
+============================

@@ -1,0 +1,8 @@
+============================
+Test log for h5stat_gentest 
+============================
+0.99user 0.00system 0:00.99elapsed 100%CPU (0avgtext+0avgdata 30312maxresident)k
+0inputs+12488outputs (0major+7790minor)pagefaults 0swaps
+
+Finished testing h5stat_gentest 
+============================

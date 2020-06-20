@@ -4,36 +4,31 @@
 #include <cmath>
 #include "customMath.h"
 #include <limits>
-
+//binary search algorithm, searches given array in log(n) time
 int binSearch(double tgt, double* in, int index, int size)
 {
   double left = in[index];
   double mid = in[index + size/2];
-
-
-  /*
-  cout << endl;
-  cout << "Size:" << size << endl;
-  cout << "Left: " << left << endl;
-  cout << "Target:" << tgt << endl;
-  cout << "Middle: " << mid << endl;
-  */
-  if(size <= 2)
+  if(size == 0)
   {
     return index;
   }
 
   if(tgt > left && tgt < mid)
   {
-      return binSearch(tgt, in, index,size/2);
+    return binSearch(tgt, in, index,size/2);
   }
   if(tgt > left && tgt > mid)
   {
-      return binSearch(tgt, in, index+size/2 -1,size/2);
+    return binSearch(tgt, in, index+size/2,size - 1);
   }
 
   return -1;
 };
+
+//returns the interpolated value from the given sorted arrays
+//Note for Prof. Sefkow: This is the array performing differently from Yorick
+//It functions identically to other implementations of interp functions online
 double interp(double* xArr, double* yArr, double target, int xSize)
 {
 
@@ -43,41 +38,26 @@ double interp(double* xArr, double* yArr, double target, int xSize)
   }
   if(target >= xArr[xSize-1])
   {
-
       return yArr[xSize-1];
   }
   int index = binSearch(target, xArr, 0, xSize);
-  //out << "index: " << index << endl;
   double m = (yArr[index+1]-yArr[index])/(xArr[index+1]-xArr[index]);
   double b = yArr[index]-m*xArr[index];
-  //cout << "xArr[index]: " << xArr[index] << " || yArr[index]: "  << yArr[index] << endl;
-  //cout << "xArr[index+1]: " << xArr[index+1] << " || yArr[index+1]: "  << yArr[index+1] << endl;
   return m*target+b;
 };
-bool areEqual(double a, double b, int precision)
+//used for interpolating all values of a given array, relies on previous interp function
+//xsize is the length of "xArr" and "yArr", size is the length of the target array
+double* interpArr(double* xArr, double* yArr, double* target, int xsize, int size)
 {
-  /*
-  cout << scientific;
-  cout << endl;
-  cout << "fabs(a-b)"<< std::fabs(b-a)<<endl;
-  cout << "eps*fabs(a+b)"<< 1e-10 * std::fabs(a+b)<<endl;
-  */
-  return (std::fabs(b-a) <= 1e-10 * std::fabs(a+b) * precision) || (std::fabs(a-b) <= std::numeric_limits<double>::min());
-};
-int compareDub(double a, double b)
-{
-  if(areEqual(a,b,1))
+  double* result = new double[size];
+  for(int i = 0; i < size; i++)
   {
-    return 0;
-  }
-  if(a > b)
-  {
-    return 1;
-  }
-  return -1;
-};
+    result[i] = interp(xArr, yArr, target[i],xsize);
 
-
+  }
+  return result;
+}
+//fills an array of size num with evenly spaced double values between start and stop
 void span(double* target, double start, double stop, int num)
 {
   float increment = (stop-start)/(num - 1);

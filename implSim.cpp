@@ -1,25 +1,19 @@
 #include "implSim.h"
 
 using namespace std;
-
+//main function called in program
 int main(int argc, char const *argv[]) {
-  printf("%s\n", "Check 1");
-  initialize();
-  //printf("%s\n", "Check 2");
-  launchRays();
-//  printf("%s\n", "Check 3");
-  cbet();
-  
-  updateH5();
   /*
-  for(int i = 0; i < nx; i++)
-  {
-    for(int j = 0; j < nz;j++)
-    {
-      cout<< "edep[i][j][0]: " << edep[i][j][0]<<endl;
-      cout<< "edep[i][j][1]: " << edep[i][j][1]<<endl;
-    }
-  }
+    Basic steps of the program:
+    1. Initialize the Arrays
+    2. Launch rays and track for overlapping beams
+    3. Perform CBET calculations and update arrays
+    4. Update/write HDF5 file with desired output arrays
+    5. Plot arrays (performed by matplotting.py)
   */
+  initialize();
+  launchRays();
+  cbet();
+  updateH5();
   return 0;
 }

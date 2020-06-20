@@ -40,11 +40,11 @@ inline double k;
 inline double knorm;
 inline double cs;
 inline int ray1num;
-//Pointers for necessary arrays used across multiple functions
-inline double* uray;
-inline double* rayx;
-inline double* rayz;
-inline double* amp_norm;
+//Pointers for necessary arrays
+inline double* uray; //nt
+inline double* rayx;//nt
+inline double* rayz;//nt
+inline double* amp_norm;//nt
 inline double** intersections; //nx nz
 inline int**** marked; //nx nz numstored nbeams
 inline double** dedendx; //nx nz
@@ -52,11 +52,11 @@ inline double** dedendz; //nx nz
 inline double* x; //nx
 inline double* z; //nz
 inline double** eden; //nx nz
+
 inline double*** edep; //nx+2 nz+2 nbeams
 inline int*** present; //nx nz nbeams
 inline double** machnum; //nx nz
 inline int**** boxes; //nbeams nrays nx*3 2
-//___________________________________________
 inline double*** W1_storage; //nx nz numstored
 inline double*** W2_storage; //nx nz numstored
 inline double** u_flow; //nx nz
@@ -68,16 +68,16 @@ inline double** W2;//nx nz
 inline double** W1_init;//nx nz
 //Launch_Ray_XZ specific arrays (all have a length of nt)
 inline double* myx; //nt
-inline double* mytime;
-inline double* myz;
-inline double* mykx;
-inline double* mykz;
-inline double* myvx;
-inline double* myvz;
-inline double* amplitude_norm;
-inline double* markingx;
-inline double* markingz;
-inline double* nuei;
+inline double* mytime;//nt
+inline double* myz;//nt
+inline double* mykx;//nt
+inline double* mykz;//nt
+inline double* myvx;//nt
+inline double* myvz;//nt
+inline double* amplitude_norm;//nt
+inline double* markingx;//nt
+inline double* markingz;//nt
+inline double* nuei;//nt
 //CBET specific arrays
 inline double** W2_init;//nx nz
 inline double** W1_new;//nx nz
@@ -86,11 +86,13 @@ inline double** i_b1;//nx nz
 inline double** i_b2;//nx nz
 inline double** i_b1_new;//nx nz
 inline double** i_b2_new;//nx nz
-inline double** i_bplot;
-inline double** i_b_newplot;
 inline double** wpe; //nx nz
 inline double*** crossesz; //nbeams nrays ncrossings
 inline double*** crossesx; //nbeams nrays ncrossings
 inline int*** ints; //nbeams nrays ncrossings
-
+//arrays used only for plotting
+inline double** i_bplot;//nx nz
+inline double** i_b_newplot;//nx nz
+inline double** edenplot; //the array is eden/ncrit,  nx nz
+inline double** edepplot; //nx nz
 #endif

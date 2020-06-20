@@ -21,7 +21,18 @@ var3.set("") # default value
 w = OptionMenu(window, var1, *datalist)
 v = OptionMenu(window, var2, *datalist)
 y = OptionMenu(window, var3, *datalist)
-
+namer = tk.Entry(
+    foreground = "white",
+    background = "grey",
+    width = 15
+)
+entryLabel = tk.Label(
+    text = "Plot Name",
+    foreground="white",
+    background="grey",
+    width=15,
+    height=1
+)
 window.title("Implosion Simulation Plotting")
 #can use hexidecimal values as well
 #optionMenu = OptionMenu(*datalist)
@@ -54,18 +65,21 @@ button = tk.Button(
     fg="white"
 )
 def handle_keypress(event):
-    ax = plt.figure().gca(projection='3d')
     path1 = '/'+var1.get()
     path2 = '/'+var2.get()
     path3 = '/'+var3.get()
     set1 = np.array(implSim[path1][:])
     set2 = np.array(implSim[path2][:])
-    set1, set2 = np.meshgrid(set1, set2)
+    #set1, set2 = np.meshgrid(set1, set2)
     temp = np.array(implSim[path3][:])
-
-
-    ax.plot_surface(set1,set2,temp,cmap=cm.coolwarm,linewidth=0, antialiased=False)
+    plt.contourf(set1,set2,temp, 100, cmap='plasma')
+    plt.title(namer.get())
+    plt.xlabel(var1.get())
+    plt.ylabel(var2.get())
+    plt.colorbar()
     plt.show()
+    #ax.plot_surface(set1,set2,temp,cmap=cm.coolwarm,linewidth=0, antialiased=False)
+    #plt.show()
 
 
 button.bind("<Button-1>", handle_keypress)
@@ -76,6 +90,8 @@ dropLabel2.pack()
 v.pack()
 dropLabel3.pack()
 y.pack()
+namer.pack()
+entryLabel.pack()
 button.pack()
 
 window.mainloop()
