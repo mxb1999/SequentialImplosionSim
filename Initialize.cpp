@@ -5,14 +5,19 @@ using namespace std;
 //dynamically allocate and initialize the arrays
 void initialize()
 {
+  xcnt = 0; // DELETE
+  zcnt = 0; // DELETE
   uray = new double[nt];
   for(int i = 0; i < nt; i++)
   {
     uray[i] = 1.0;
   }
+  auto start = chrono::high_resolution_clock::now();
+
   //dynamic allocation (using pointers to access arrays so the stack is not filled)
   intersections = new double*[nx]; //nx nz
   marked = new int***[nx]; //nx nz numstored nbeams
+  markedTrack = new bool***[nx];//nx nz numstored nbeams
   dedendx = new double*[nx]; //nx nz
   dedendz = new double*[nx]; //nx nz
   x = new double[nx]{0.0}; //nx nz
@@ -21,7 +26,8 @@ void initialize()
   edep = new double**[nx+2]; //nx+2 nz+2 nbeams
   present = new int**[nx]; //nx nz nbeams
   machnum = new double*[nx]; //nx nz
-  boxes = new int***[nbeams]; //nbeams nrays nx*3 2
+  boxes = new int***[nbeams]; //nbeams nrays ncrossings 2
+  boxTrack = new bool***[nbeams]; //nbeams nrays ncrossings 2
   W1_storage = new double**[nx]; //nx nz numstored
   W2_storage = new double**[nx]; //nx nz numstored
   u_flow = new double*[nx]; //nx nz
@@ -46,7 +52,10 @@ void initialize()
   mykz= new double[nt]{0.0};
   myvx=new double[nt]{0.0};
   myvz= new double[nt]{0.0};
-  for(int i = 0; i < nx+2; i++)
+  auto check1 = chrono::high_resolution_clock::now();
+
+  #pragma omp for parallel
+  {for(int i = 0; i < nx+2; i++)
   {
     if(i < nx)
     {
@@ -68,6 +77,7 @@ void initialize()
       W2_new[i] = new double[nz]{0.0};
       wpe[i] = new double[nz]{0.0};
       marked[i] = new int**[nz];
+      markedTrack[i] = new bool**[nz];
       i_b1[i] = new double[nz]{0.0};
       i_b2[i] = new double[nz]{0.0};
     }
@@ -78,21 +88,26 @@ void initialize()
       if(j < nz && i < nx)
       {
         marked[i][j] = new int*[numstored];
+        markedTrack[i][j] = new bool*[numstored];
         present[i][j] = new int[nbeams]{0};
         W1_storage[i][j] = new double[numstored]{0.0};
         W2_storage[i][j] = new double[numstored]{0.0};
         for(int m = 0; m < numstored;m++)
         {
           marked[i][j][m] = new int[nbeams]{0};
+          markedTrack[i][j][m] = new bool[nbeams]{false};
         }
       }
       edep[i][j] = new double[nbeams]{0.0};
 
     }
-  }
+  }}
+  auto check2 = chrono::high_resolution_clock::now();
+
   for(int i = 0; i < nbeams; i++)
   {
     boxes[i] = new int**[nrays];
+    boxTrack[i] = new bool**[nrays];
     dkx[i] = new double*[nrays];
     dkz[i] = new double*[nrays];
     dkmag[i] = new double*[nrays];
@@ -106,14 +121,18 @@ void initialize()
       dkmag[i][j] = new double[ncrossings-1]{0.0};
       crossesz[i][j] = new double[ncrossings]{0.0};
       crossesx[i][j] = new double[ncrossings]{0.0};
-      boxes[i][j] = new int*[nx*3];
+      boxes[i][j] = new int*[ncrossings];
+      boxTrack[i][j] = new bool*[ncrossings];
       ints[i][j] = new int[ncrossings]{0};
       for(int m = 0; m < nx*3;m++)
       {
         boxes[i][j][m] = new int[2]{0};
+        boxTrack[i][j][m] = new bool[2]{false};
       }
     }
   }
+  auto check3 = chrono::high_resolution_clock::now();
+
   cout << "Setting initial conditions for ray tracker..." <<endl;
   cout << "nrays per beam is"<< nrays <<endl;
 
@@ -129,7 +148,6 @@ void initialize()
       machnum[i][j] = fmax(0.0,(((-0.4)-(-2.4))/(xmax-xmin))*(x[i]-xmin))+(-2.4);
     }
   }
-
   for(int i = 0; i < nx-1; i++)
   {
     for(int j = 0; j < nz-1; j++)
@@ -138,6 +156,7 @@ void initialize()
       dedendz[i][j] = (eden[i][j+1]-eden[i][j])/(z[j+1]-z[j]);
     }
   }
+  auto check4 = chrono::high_resolution_clock::now();
   for(int i = 0; i < fmax(nx,nz);i++)
   {
     if(i < nx)
@@ -150,6 +169,11 @@ void initialize()
       dedendx[nx-1][i] = dedendx[nx-2][i];
     }
   }
-  //plt::plot(xplot, zplot);
-//  plt::show();
+  auto check5 = chrono::high_resolution_clock::now();
+  cout << "Initialize CPU Time 1: " << chrono::duration_cast<chrono::milliseconds>(check1-start).count() << " seconds" << endl;
+  cout << "Initialize CPU Time 2: " << chrono::duration_cast<chrono::milliseconds>(check2-check1).count() << " seconds" << endl;
+  cout << "Initialize CPU Time 3: " << chrono::duration_cast<chrono::milliseconds>(check3-check2).count() << " seconds" << endl;
+  cout << "Initialize CPU Time 4: " << chrono::duration_cast<chrono::milliseconds>(check4-check3).count() << " seconds" << endl;
+  cout << "Initialize CPU Time 5: " << chrono::duration_cast<chrono::milli seconds>(check4-check3).count() << " seconds" << endl;
+
 }

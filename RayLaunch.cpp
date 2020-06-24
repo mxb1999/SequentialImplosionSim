@@ -12,7 +12,7 @@ void trackRays()
   double kz0[nrays];
   double phase_x[nrays];
   double pow_x[nrays];
-
+  file.open("track.txt");
   span(phase_x,beam_min_z, beam_max_z, nrays);
   for(int i = 0; i < nrays; i++)
   {
@@ -97,14 +97,14 @@ void updateIntersections()
       for(int m = 0; m < numstored; m++)
       {
         //if at least two beams are in the same x and z coordinates, update intersections
-        if(marked[i][j][m][0] == 0)
+        if(!markedTrack[i][j][m][0])
         {
           break;
         }else
         {
           for(int l = 0; l < numstored; l++)
           {
-            if(marked[i][j][l][1] == 0 )
+            if(!markedTrack[i][j][l][1])
             {
               break;
             }else

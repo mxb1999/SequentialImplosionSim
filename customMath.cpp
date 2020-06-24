@@ -4,6 +4,7 @@
 #include <cmath>
 #include "customMath.h"
 #include <limits>
+//implementations of custom math functions
 //binary search algorithm, searches given array in log(n) time
 int binSearch(double tgt, double* in, int index, int size)
 {

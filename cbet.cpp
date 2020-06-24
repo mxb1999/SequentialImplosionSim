@@ -5,35 +5,36 @@ using namespace std;
 void initializeArr()
 {
   cs = 1e2*sqrt(ec*(Z*Te_eV+3.0*Ti_eV)/mi_kg);	// acoustic wave speed, approx. 4e7 cm/s in this example
-    for(int i = 0; i < nx;i++)
+  for(int i = 0; i < nx;i++)
+  {
+    for(int j = 0; j < nz;j++)
     {
-      for(int j = 0; j < nz;j++)
-      {
 
-        i_b1[i][j] = edep[i][j][0];
-        i_b2[i][j] = edep[i][j][1];
-        u_flow[i][j] = machnum[i][j]*cs;
-        W1[i][j] = sqrt(1.0-eden[i][j]/ncrit)/double(rays_per_zone);
-        W2[i][j] = sqrt(1.0-eden[i][j]/ncrit)/double(rays_per_zone);
-
-        W1_new[i][j] = W1[i][j];
-        W2_new[i][j] = W2[i][j];
-        W1_init[i][j] = W1_new[i][j];
-        W2_init[i][j] = W2_new[i][j];
-      }
+      i_b1[i][j] = edep[i][j][0];
+      i_b2[i][j] = edep[i][j][1];
+      u_flow[i][j] = machnum[i][j]*cs;
+      W1[i][j] = sqrt(1.0-eden[i][j]/ncrit)/double(rays_per_zone);
+      W2[i][j] = sqrt(1.0-eden[i][j]/ncrit)/double(rays_per_zone);
+      W1_new[i][j] = W1[i][j];
+      W2_new[i][j] = W2[i][j];
+      W1_init[i][j] = W1_new[i][j];
+      W2_init[i][j] = W2_new[i][j];
     }
-    for(int i = 0; i < nbeams;i++)
+  }
+  cout << scientific;
+  for(int i = 0; i < nbeams;i++)
+  {
+    for(int j = 0; j < nrays; j++)
     {
-      for(int j = 0; j < nrays; j++)
+      for(int m = 0; m < ncrossings-1; m++)
       {
-        for(int m = 0; m < ncrossings-1; m++)
-        {
-          dkx[i][j][m] = crossesx[i][j][m+1]-crossesx[i][j][m];
-          dkz[i][j][m] = crossesz[i][j][m+1]-crossesz[i][j][m];
-          dkmag[i][j][m] = sqrt(pow(dkx[i][j][m],2.0)+pow(dkz[i][j][m],2.0));
-        }
+        dkx[i][j][m] = crossesx[i][j][m+1]-crossesx[i][j][m];
+        dkz[i][j][m] = crossesz[i][j][m+1]-crossesz[i][j][m];
+        dkmag[i][j][m] = sqrt(pow(dkx[i][j][m],2.0)+pow(dkz[i][j][m],2.0));
+        //cout << dkz[i][j][m] << endl;
       }
-    }
+    }//nbeams nrays ncrossings
+  }
 }
 
 void gain_CBET()
@@ -51,8 +52,10 @@ void gain_CBET()
         //marked array has dimensions nx nz numstored nbeams
         int ix = boxes[i][j][m][0];
         int iz = boxes[i][j][m][1];
+
           if(intersections[ix][iz] != 0)
           {
+            //cout << ix << " " << iz << endl;
             vector<int> nonzeros1;
             vector<int> nonzeros2;
             int numrays1 = 0;
@@ -60,12 +63,12 @@ void gain_CBET()
             //finding the nonzero locations within marked
             for(int s = 0; s < numstored;s++)
             {
-              if(marked[ix][iz][s][0] != 0)
+              if(markedTrack[ix][iz][s][0])
               {
                 nonzeros1.push_back(s);
                 numrays1++;
               }
-              if(marked[ix][iz][s][1] != 0)
+              if(markedTrack[ix][iz][s][1])
               {
                 nonzeros2.push_back(s);
                 numrays2++;
@@ -103,8 +106,8 @@ void gain_CBET()
           {
             for(int q = 0; q <ncrossings; q++)
             {
-              int ix2 = boxes[i+1][mark2Copy[n]][q][0];
-              int iz2 = boxes[i+1][mark2Copy[n]][q][1];
+              int ix2 = boxes[i+1][marker2[n]][q][0];
+              int iz2 = boxes[i+1][marker2[n]][q][1];
               if ( ix == ix2 && iz == iz2 )
               {
                 mark2Copy[n] = q;
@@ -112,8 +115,9 @@ void gain_CBET()
               }
             }
           }
-        int n2limit = fmin(*(*(present[ix]+iz)+1),numrays2);
-        for ( int n2 = 1; n2 < n2limit; n2++)
+
+        int n2limit = fmin(present[ix][iz][0],numrays2);
+        for ( int n2 = 0; n2 < n2limit; n2++)
         {
           double ne = eden[ix][iz];
           double epsilon = 1.0-ne/ncrit;
@@ -150,8 +154,9 @@ void gain_CBET()
             W2_storage[ix][iz][n2] = W2_new[ix][iz];
             W1_new[ix][iz] = W1[ix][iz]*exp(1*W2[ix][iz]*dkmag[i][j][m]*gain2/sqrt(epsilon));
             W1_storage[ix][iz][raynum] = W1_new[ix][iz];
+          //  file << marker2[n2] << " " << mark2Copy[n2] << endl;
+          //  cout << dkmag[i+1][marker2[n2]][mark2Copy[n2]] << " " << dkmag[i][j][m] << endl;
           }
-
           }
         }
       }
@@ -174,6 +179,9 @@ void update_CBET()
   {
     i_b1_new[i] = new double[nz];
     i_b2_new[i] = new double[nz];
+  }
+  for(int i = 0; i < nx; i++)
+  {
     for(int j = 0; j < nz; j++)
     {
       i_b1_new[i][j] = i_b1[i][j];
@@ -187,6 +195,11 @@ void update_CBET()
     {
       for(int m = 0; m < ncrossings; m++)
       {
+        if(boxTrack[i][j][m][0] == 0 || boxTrack[i][j][m][1] == 0)
+        {
+          break;
+        }
+
         int ix = boxes[i][j][m][0];
         int iz = boxes[i][j][m][1];
         //if two beams intersect
@@ -199,12 +212,12 @@ void update_CBET()
           int numrays2 = 0;
           for(int q = 0; q < numstored; q++)
           {
-            if(marked[ix][iz][q][0] != 0)
+            if(markedTrack[ix][iz][q][0])
             {
               nonzero1.push_back(q);
               numrays1++;
             }
-            if(marked[ix][iz][q][1] != 0)
+            if(markedTrack[ix][iz][q][1])
             {
               nonzero2.push_back(q);
               numrays2++;
@@ -252,8 +265,11 @@ void update_CBET()
             }
           }
           //calculate the fractional change in CBET field to be applied
+          cout << scientific;
           double fractional_change_1 = (-1.0 * (1.0 - (W1_new[ix][iz]/W1_init[ix][iz])) * i_b1[ix][iz]);
           double fractional_change_2 = (-1.0 * (1.0 - (W2_new[ix][iz]/W2_init[ix][iz])) * i_b2[ix][iz]);
+          //cout << W1_new[ix][iz] << "  " << W2_new[ix][iz] << endl;
+          //cout << W1_init[ix][iz] << " " << W2_init[ix][iz] << endl;
           /*cout <<fractional_change_1<< endl;
           cout << fractional_change_2 << endl;
           cout <<i_b1[ix][iz]<< endl;
@@ -263,8 +279,10 @@ void update_CBET()
           cout << endl;
           */
           //apply the change to the field at the current xz position
+
           i_b1_new[ix][iz] += fractional_change_1;
           i_b2_new[ix][iz] += fractional_change_2;
+        //  cout << i_b1_new[ix][iz] << " " << i_b2_new[ix][iz] << " " <<fractional_change_1 << " " <<fractional_change_2 << endl;
           double x_prev_1 = x[ix];
           double z_prev_1 = z[iz];
           double x_prev_2 = x[ix];
@@ -284,7 +302,8 @@ void update_CBET()
 
               if(x_curr_1 != x_prev_1 || z_curr_1 != z_prev_1)
               {
-                i_b1_new[ix_next_1][iz_next_1] += fractional_change_1 * (present[ix][iz][0]/present[ix_next_1][iz_next_1][0]);
+                i_b1_new[ix_next_1][iz_next_1] += fractional_change_1 * ((double)present[ix][iz][0])/present[ix_next_1][iz_next_1][0];
+
               }
               x_prev_1 = x_curr_1;
               z_prev_1 = z_curr_1;
@@ -306,7 +325,7 @@ void update_CBET()
 
               if(x_curr_2 != x_prev_2 || z_curr_2 != z_prev_2)
               {
-                i_b2_new[ix_next_2][iz_next_2] += fractional_change_2 * (present[ix][iz][0]/present[ix_next_2][iz_next_2][1]);
+                i_b2_new[ix_next_2][iz_next_2] += fractional_change_2 * ((double)present[ix][iz][0])/(present[ix_next_2][iz_next_2][1]);
               }
               x_prev_2 = x_curr_2;
               z_prev_2 = z_curr_2;
@@ -352,35 +371,4 @@ void cbet()
 {
   gain_CBET();
   update_CBET();
-  for(int i = 0; i < nx; i++)
-  {
-    for(int j = 0; j < nz; j++)
-    {
-
-      if(i_b1_new[i][j] != i_b1[i][j]){
-        //  cout << i_b2_new[i][j] << endl;
-
-       cout << "i: " << i << " j: " << j<< endl;
-      //cout << i_b2[i][j] << endl;
-  //  cout << endl;
-      }
-    }
-  }
-  for(int i = 0; i < nbeams;i++)
-  {
-    for(int j = 0; j < nrays; j++)
-    {
-      for(int m = 0; m < ncrossings; m++)
-      {
-        if(boxes[i][j][m][0] != 0 || boxes[i][j][m][1] != 0)
-        {
-        //  cout << boxes[i][j][m][0] << "  " <<boxes[i][j][m][1] << " || ";
-        }
-      }
-    }
-  }
-  {
-
-  }
-
 }

@@ -3,7 +3,7 @@
 using namespace H5;
 
 
-
+//determines the type based off of a user string
 int determineType(string type)
 {
   if(type.compare("double*") == 0)

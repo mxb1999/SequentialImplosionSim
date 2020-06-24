@@ -1,9 +1,9 @@
 #include <iostream>
-#include <omp.h>
 #include <vector>
 #include <string>
 #include <fstream>
 #include <omp.h>
+#include <chrono>
 #include <cmath>
 #include "H5Cpp.h"
 #include "customMath.h"
@@ -23,12 +23,15 @@ inline double intensity = 2.0e15;
 inline double uray_mult = intensity*(courant_mult)*pow(double(rays_per_zone),-1.0);
 inline H5::H5File* store;
 inline double timeKeep;
+inline ofstream file;
 inline int beam;
 inline int raynum;
 inline int thisx;
 inline int thisz;
 //Launch Ray Values
 inline int thisx_0;
+inline int xcnt;  // DELETE
+inline int zcnt; // DELETE
 inline int thisx_00;
 inline int thisz_0;
 inline int thisz_00;
@@ -52,11 +55,13 @@ inline double** dedendz; //nx nz
 inline double* x; //nx
 inline double* z; //nz
 inline double** eden; //nx nz
+inline bool**** markedTrack; //nx nz numstored nbeams
 
 inline double*** edep; //nx+2 nz+2 nbeams
 inline int*** present; //nx nz nbeams
 inline double** machnum; //nx nz
 inline int**** boxes; //nbeams nrays nx*3 2
+inline bool**** boxTrack;
 inline double*** W1_storage; //nx nz numstored
 inline double*** W2_storage; //nx nz numstored
 inline double** u_flow; //nx nz
