@@ -53,10 +53,8 @@ void initialize()
   myvx=new double[nt]{0.0};
   myvz= new double[nt]{0.0};
   auto check1 = chrono::high_resolution_clock::now();
-
-  #pragma omp for parallel
-  {for(int i = 0; i < nx+2; i++)
-  {
+    for(int i = 0; i < nx+2; i++)
+    {
     if(i < nx)
     {
       intersections[i] = new double[nz]{0.0};
@@ -101,7 +99,8 @@ void initialize()
       edep[i][j] = new double[nbeams]{0.0};
 
     }
-  }}
+  }
+
   auto check2 = chrono::high_resolution_clock::now();
 
   for(int i = 0; i < nbeams; i++)
@@ -174,6 +173,6 @@ void initialize()
   cout << "Initialize CPU Time 2: " << chrono::duration_cast<chrono::milliseconds>(check2-check1).count() << " seconds" << endl;
   cout << "Initialize CPU Time 3: " << chrono::duration_cast<chrono::milliseconds>(check3-check2).count() << " seconds" << endl;
   cout << "Initialize CPU Time 4: " << chrono::duration_cast<chrono::milliseconds>(check4-check3).count() << " seconds" << endl;
-  cout << "Initialize CPU Time 5: " << chrono::duration_cast<chrono::milli seconds>(check4-check3).count() << " seconds" << endl;
+  cout << "Initialize CPU Time 5: " << chrono::duration_cast<chrono::milliseconds>(check4-check3).count() << " seconds" << endl;
 
 }

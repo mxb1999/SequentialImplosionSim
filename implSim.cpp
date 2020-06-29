@@ -23,11 +23,11 @@ int main(int argc, char const *argv[]) {
   auto start4 = chrono::high_resolution_clock::now();
   updateH5();
   auto stop4 = chrono::high_resolution_clock::now();
-  cout << "Initialize CPU Time: " << chrono::duration_cast<chrono::seconds>(stop1-start1).count() << " seconds" << endl;
-  cout << "Ray Launch CPU Time: " << chrono::duration_cast<chrono::seconds>(stop2-start2).count() << " seconds" << endl;
-  cout << "CBET CPU Time: " << chrono::duration_cast<chrono::seconds>(stop3-start3).count() << " seconds" << endl;
-  cout << "HDF5 Write CPU Time: " << chrono::duration_cast<chrono::seconds>(stop4-start4).count() << " seconds" << endl;
+  cout << "Initialize CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop1-start1).count()/1e3 << " seconds" << endl;
+  cout << "Ray Launch CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop2-start2).count()/1e3 << " seconds" << endl;
+  cout << "CBET CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop3-start3).count()/1e3 << " seconds" << endl;
+  cout << "HDF5 Write CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop4-start4).count()/1e3 << " seconds" << endl;
   cout << "_____________________________________________" << endl;
-  cout << "Total CPU Time: " << chrono::duration_cast<chrono::seconds>(stop4-start1).count() << " seconds" << endl;
+  cout << "Total CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop4-start1).count()/1e3 << " seconds" << endl;
   return 0;
 }
