@@ -7,8 +7,13 @@
 const int nx=201; const float xmin = -5.0e-4; const float xmax=5.0e-4; const float dx = (xmax-xmin)/(nx-1);
 const int nz=201; const float zmin = -5.0e-4; const float zmax=5.0e-4; const float dz = (zmax-zmin)/(nz-1);
 const int nbeams = 2;
+const int threads = 12;
 const int rays_per_zone = 5 ;
 const double c = 29979245800.0;
+static double injected = 0.0;
+const double intensity = 2.0e15;
+const float courant_mult = 0.2; // 0.37 // 0.25 // 0.36 // 0.22;
+const double uray_mult = intensity*(courant_mult)*pow(double(rays_per_zone),-1.0);
 const double offset = 0.5e-4;
 const double sigma = 1.7e-4;
 const double e0 =8.85418782e-12;
@@ -34,7 +39,6 @@ const double omega = 2*pi*freq;	// frequency of light, in rad/s
 const double ncrit = 1e-6*(pow(omega,2.0)*me*e0/pow(ec,2.0));
 const double beam_max_z = 3.0e-4; const double beam_min_z = -3.0e-4;
 const int nrays=int(rays_per_zone*(beam_max_z-beam_min_z)/dz)+0;
-const float courant_mult = 0.2; // 0.37 // 0.25 // 0.36 // 0.22;
 const double dt=courant_mult*fmin(dx,dz)/c;
 const int nt=int(pow(courant_mult,-1.0)*fmax(nx,nz)*2.0);
 const int numstored = nx*5;

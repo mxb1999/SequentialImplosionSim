@@ -5,36 +5,37 @@ using namespace std;
 void initializeArr()
 {
   cs = 1e2*sqrt(ec*(Z*Te_eV+3.0*Ti_eV)/mi_kg);	// acoustic wave speed, approx. 4e7 cm/s in this example
-  for(int i = 0; i < nx;i++)
-  {
-    for(int j = 0; j < nz;j++)
+  #pragma omp parallel for num_threads(threads)
+    for(int i = 0; i < nx;i++)
     {
-
-      i_b1[i][j] = edep[i][j][0];
-      i_b2[i][j] = edep[i][j][1];
-      u_flow[i][j] = machnum[i][j]*cs;
-      W1[i][j] = sqrt(1.0-eden[i][j]/ncrit)/double(rays_per_zone);
-      W2[i][j] = sqrt(1.0-eden[i][j]/ncrit)/double(rays_per_zone);
-      W1_new[i][j] = W1[i][j];
-      W2_new[i][j] = W2[i][j];
-      W1_init[i][j] = W1_new[i][j];
-      W2_init[i][j] = W2_new[i][j];
-    }
-  }
-  cout << scientific;
-  for(int i = 0; i < nbeams;i++)
-  {
-    for(int j = 0; j < nrays; j++)
-    {
-      for(int m = 0; m < ncrossings-1; m++)
+      for(int j = 0; j < nz;j++)
       {
-        dkx[i][j][m] = crossesx[i][j][m+1]-crossesx[i][j][m];
-        dkz[i][j][m] = crossesz[i][j][m+1]-crossesz[i][j][m];
-        dkmag[i][j][m] = sqrt(pow(dkx[i][j][m],2.0)+pow(dkz[i][j][m],2.0));
-        //cout << dkz[i][j][m] << endl;
+
+        i_b1[i][j] = edep[i][j][0];
+        i_b2[i][j] = edep[i][j][1];
+        u_flow[i][j] = machnum[i][j]*cs;
+        W1[i][j] = sqrt(1.0-eden[i][j]/ncrit)/double(rays_per_zone);
+        W2[i][j] = sqrt(1.0-eden[i][j]/ncrit)/double(rays_per_zone);
+        W1_new[i][j] = W1[i][j];
+        W2_new[i][j] = W2[i][j];
+        W1_init[i][j] = W1_new[i][j];
+        W2_init[i][j] = W2_new[i][j];
       }
-    }//nbeams nrays ncrossings
-  }
+    }
+  cout << scientific;
+  #pragma omp parallel for num_threads(threads)
+    for(int i = 0; i < nbeams;i++)
+    {
+      for(int j = 0; j < nrays; j++)
+      {
+        for(int m = 0; m < ncrossings-1; m++)
+        {
+          dkx[i][j][m] = crossesx[i][j][m+1]-crossesx[i][j][m];
+          dkz[i][j][m] = crossesz[i][j][m+1]-crossesz[i][j][m];
+          dkmag[i][j][m] = sqrt(pow(dkx[i][j][m],2.0)+pow(dkz[i][j][m],2.0));
+        }
+      }//nbeams nrays ncrossings
+    }
 }
 
 void gain_CBET()
@@ -42,20 +43,24 @@ void gain_CBET()
   double constant1 = (pow(estat,2.0))/(4*(1.0e3*me)*c*omega*kb*Te*(1+3*Ti/(Z*Te)));
   cout << "Calculating CBET gains" << endl;
   initializeArr();
+
   //performs the CBET calculation for each crossing of each ray calculated for the beams
+  int storeDup[nx][nz]{0};
   for(int i = 0; i < nbeams-1;i++)
   {
+    #pragma omp parallel for num_threads(12)
     for(int j = 0; j < nrays; j++)
     {
+      #pragma omp parallel for num_threads(12)
       for(int m = 0; m < ncrossings;m++)
       {
         //marked array has dimensions nx nz numstored nbeams
+
         int ix = boxes[i][j][m][0];
         int iz = boxes[i][j][m][1];
-
           if(intersections[ix][iz] != 0)
           {
-            //cout << ix << " " << iz << endl;
+            storeDup[ix][iz]++;
             vector<int> nonzeros1;
             vector<int> nonzeros2;
             int numrays1 = 0;
@@ -63,12 +68,12 @@ void gain_CBET()
             //finding the nonzero locations within marked
             for(int s = 0; s < numstored;s++)
             {
-              if(markedTrack[ix][iz][s][0])
+              if(marked[ix*(nz)+iz][s*(nbeams)+0] != 0)
               {
                 nonzeros1.push_back(s);
                 numrays1++;
               }
-              if(markedTrack[ix][iz][s][1])
+              if(marked[ix*(nz)+iz][s*(nbeams)+1] != 0)
               {
                 nonzeros2.push_back(s);
                 numrays2++;
@@ -84,15 +89,14 @@ void gain_CBET()
             {
               if(l < numrays1)
               {
-                marker1[l] = marked[ix][iz][nonzeros1[l]][0];
+                marker1[l] = marked[ix*(nz)+iz][nonzeros1[l]*(nbeams)+0] - 1;
               }
               if(l < numrays2)
               {
-                marker2[l] = marked[ix][iz][nonzeros2[l]][1];
-                mark2Copy[l] = marked[ix][iz][nonzeros2[l]][1];
+                marker2[l] = marked[ix*(nz)+iz][nonzeros2[l]*(nbeams)+1] - 1;
+                mark2Copy[l] = marked[ix*(nz)+iz][nonzeros2[l]*(nbeams)+1] - 1;
               }
             }
-
           for(int r = 0; r < numrays1;r++)
           {
             if(marker1[r] == j)
@@ -101,7 +105,6 @@ void gain_CBET()
               break;
             }
           }
-
           for(int n = 0; n < numrays2; n++)
           {
             for(int q = 0; q <ncrossings; q++)
@@ -117,6 +120,7 @@ void gain_CBET()
           }
 
         int n2limit = fmin(present[ix][iz][0],numrays2);
+
         for ( int n2 = 0; n2 < n2limit; n2++)
         {
           double ne = eden[ix][iz];
@@ -148,14 +152,13 @@ void gain_CBET()
 
                           // new energy of crossing (PROBE) ray (beam 2)
           //updating arrays based upon the calculated magnitude changes
+          //Chronological Issue for Parallelization: W1_new and W2_new can be written to at ix and iz multiple times
           if (dkmag[i+1][marker2[n2]][mark2Copy[n2]] >= 1.0*dx)
           {
-            W2_new[ix][iz] = W2[ix][iz]*exp(-1*W1[ix][iz]*dkmag[i+1][marker2[n2]][mark2Copy[n2]]*gain2/sqrt(epsilon));
-            W2_storage[ix][iz][n2] = W2_new[ix][iz];
-            W1_new[ix][iz] = W1[ix][iz]*exp(1*W2[ix][iz]*dkmag[i][j][m]*gain2/sqrt(epsilon));
-            W1_storage[ix][iz][raynum] = W1_new[ix][iz];
-          //  file << marker2[n2] << " " << mark2Copy[n2] << endl;
-          //  cout << dkmag[i+1][marker2[n2]][mark2Copy[n2]] << " " << dkmag[i][j][m] << endl;
+              W2_new[ix][iz] = W2[ix][iz]*exp(-1*W1[ix][iz]*dkmag[i+1][marker2[n2]][mark2Copy[n2]]*gain2/sqrt(epsilon));
+              W2_storage[ix][iz][j] = W2_new[ix][iz];
+              W1_new[ix][iz] = W1[ix][iz]*exp(1*W2[ix][iz]*dkmag[i][j][m]*gain2/sqrt(epsilon));
+              W1_storage[ix][iz][j] = W1_new[ix][iz];
           }
           }
         }
@@ -165,8 +168,20 @@ void gain_CBET()
         cout << "     ..."<<(int)(100.*(1.0-(double)(j/double(1*nrays))))<<"%  remaining..."<<endl;
       }
     }
-
-
+  }
+  for(int i = 0; i < nx; i++)
+  {
+    for(int j = 0; j < nx; j++)
+    {
+      for(int m = 0; m < nrays; m++)
+      {
+        if(W1_new[i][j] != 0 && W1_storage[i][j][m] != 0)
+        {
+          W1_new[i][j] = W1_storage[i][j][m];
+          W2_new[i][j] = W2_storage[i][j][m];
+        }
+      }
+    }
   }
 }
 //updating CBET Intensities
@@ -180,6 +195,7 @@ void update_CBET()
     i_b1_new[i] = new double[nz];
     i_b2_new[i] = new double[nz];
   }
+  #pragma omp parallel num_threads(threads)
   for(int i = 0; i < nx; i++)
   {
     for(int j = 0; j < nz; j++)
@@ -191,6 +207,7 @@ void update_CBET()
   //perform calculation for each crossing of each ray calculated for the beams in launch rays
   for(int i = 0; i < nbeams-1;i++)
   {
+    #pragma omp parallel for num_threads(threads)
     for(int j = 0; j < nrays; j++)
     {
       for(int m = 0; m < ncrossings; m++)
@@ -210,14 +227,15 @@ void update_CBET()
           vector<int> nonzero2;
           int numrays1 = 0;
           int numrays2 = 0;
+          //#pragma omp parallel for num_threads(6)
           for(int q = 0; q < numstored; q++)
           {
-            if(markedTrack[ix][iz][q][0])
+            if(marked[ix*(nz)+iz][q*(nbeams)+0] != 0)
             {
               nonzero1.push_back(q);
               numrays1++;
             }
-            if(markedTrack[ix][iz][q][1])
+            if(marked[ix*(nz)+iz][q*(nbeams)+1] != 0)
             {
               nonzero2.push_back(q);
               numrays2++;
@@ -227,15 +245,17 @@ void update_CBET()
           int marker2[numrays2]{0};
           int ccopy[numrays2]{0};
           int rcopy[numrays2]{0};
-          for(int q = 0; q < fmax(numrays1, numrays2);q++)
+          int max = fmax(numrays1, numrays2);
+        //  #pragma omp parallel for num_threads(6)
+          for(int q = 0; q < max;q++)
           {
             if(q < numrays1)
             {
-              marker1[q] = marked[ix][iz][nonzero1[q]][0];
+              marker1[q] = marked[ix*(nz)+iz][nonzero1[q]*(nbeams)+0] - 1;
             }
             if(q < numrays2)
             {
-              marker2[q] = marked[ix][iz][nonzero2[q]][1];
+              marker2[q] = marked[ix*(nz)+iz][nonzero2[q]*(nbeams)+1] - 1;
               //make copies of the marker array to be modified
               ccopy[q] = marker2[q];
               rcopy[q] = marker2[q];
@@ -250,7 +270,6 @@ void update_CBET()
               break;
             }
           }
-
           for(int n = 0; n < numrays2; n++)
           {
             for(int q = 0; q < ncrossings;q++)
@@ -265,24 +284,10 @@ void update_CBET()
             }
           }
           //calculate the fractional change in CBET field to be applied
-          cout << scientific;
           double fractional_change_1 = (-1.0 * (1.0 - (W1_new[ix][iz]/W1_init[ix][iz])) * i_b1[ix][iz]);
           double fractional_change_2 = (-1.0 * (1.0 - (W2_new[ix][iz]/W2_init[ix][iz])) * i_b2[ix][iz]);
-          //cout << W1_new[ix][iz] << "  " << W2_new[ix][iz] << endl;
-          //cout << W1_init[ix][iz] << " " << W2_init[ix][iz] << endl;
-          /*cout <<fractional_change_1<< endl;
-          cout << fractional_change_2 << endl;
-          cout <<i_b1[ix][iz]<< endl;
-          cout << i_b2[ix][iz] << endl;
-          cout <<1.0 - W1_new[ix][iz]/W1_init[ix][iz]<< endl;
-          cout << 1.0 - W2_new[ix][iz]/W2_init[ix][iz] << endl;
-          cout << endl;
-          */
-          //apply the change to the field at the current xz position
-
           i_b1_new[ix][iz] += fractional_change_1;
           i_b2_new[ix][iz] += fractional_change_2;
-        //  cout << i_b1_new[ix][iz] << " " << i_b2_new[ix][iz] << " " <<fractional_change_1 << " " <<fractional_change_2 << endl;
           double x_prev_1 = x[ix];
           double z_prev_1 = z[iz];
           double x_prev_2 = x[ix];
@@ -293,21 +298,18 @@ void update_CBET()
             int iz_next_1 = boxes[0][j][l][1];
             double x_curr_1 = x[ix_next_1];
             double z_curr_1 = z[iz_next_1];
-
-            if(ix_next_1 == 0 || iz_next_1 == 0)
-            {
-              break;
-            }else
-            {
-
-              if(x_curr_1 != x_prev_1 || z_curr_1 != z_prev_1)
+              if(ix_next_1 == 0 || iz_next_1 == 0)
               {
-                i_b1_new[ix_next_1][iz_next_1] += fractional_change_1 * ((double)present[ix][iz][0])/present[ix_next_1][iz_next_1][0];
-
+                break;
+              }else
+              {
+                if(x_curr_1 != x_prev_1 || z_curr_1 != z_prev_1)
+                {
+                  i_b1_new[ix_next_1][iz_next_1] += fractional_change_1 * ((double)present[ix][iz][0])/present[ix_next_1][iz_next_1][0];
+                }
+                x_prev_1 = x_curr_1;
+                z_prev_1 = z_curr_1;
               }
-              x_prev_1 = x_curr_1;
-              z_prev_1 = z_curr_1;
-            }
           }
           int n2 = fmin(ray1num, numrays2 - 1);
 
@@ -322,7 +324,6 @@ void update_CBET()
               break;
             }else
             {
-
               if(x_curr_2 != x_prev_2 || z_curr_2 != z_prev_2)
               {
                 i_b2_new[ix_next_2][iz_next_2] += fractional_change_2 * ((double)present[ix][iz][0])/(present[ix_next_2][iz_next_2][1]);
@@ -330,14 +331,8 @@ void update_CBET()
               x_prev_2 = x_curr_2;
               z_prev_2 = z_curr_2;
             }
-
           }
-
         }
-      }
-      if ( j % 20 == 0 )
-      {
-        cout << "     ..."<<(int)(100.*(1.0-(double)(j/double(1*nrays))))<<"%  remaining..."<<endl;
       }
     }
   }
@@ -346,25 +341,24 @@ void update_CBET()
   i_b_newplot = new double*[nx];
   edepplot = new double*[nx];
   edenplot = new double*[nx];
-  for(int i = 0; i < nx;i++)
-  {
-    i_bplot[i] = new double[nz];
-    i_b_newplot[i] = new double[nz];
-    edepplot[i] = new double[nz]{0.0};
-    edenplot[i] = new double[nz]{0.0};
-    for(int j = 0; j < nz;j++)
+    for(int i = 0; i < nx;i++)
     {
-      edenplot[i][j] = eden[i][j]/ncrit;
-      i_bplot[i][j] = 8.53e-10*sqrt(i_b1[i][j]+i_b2[i][j]+1.0e-10)*(1.053/3.0);
-      i_b_newplot[i][j] = 8.53e-10*sqrt(fmax(1.0e-10,i_b1_new[i][j])+fmax(1.0e-10,i_b2_new[i][j]))*(1.053/3.0);
-
-
-      for(int m = 0;m<nbeams;m++)
+      i_bplot[i] = new double[nz];
+      i_b_newplot[i] = new double[nz];
+      edepplot[i] = new double[nz]{0.0};
+      edenplot[i] = new double[nz]{0.0};
+      #pragma omp parallel for num_threads(threads)
+      for(int j = 0; j < nz;j++)
       {
-        edepplot[i][j]+=edep[i][j][m];
+        edenplot[i][j] = eden[i][j]/ncrit;
+        i_bplot[i][j] = 8.53e-10*sqrt(i_b1[i][j]+i_b2[i][j]+1.0e-10)*(1.053/3.0);
+        i_b_newplot[i][j] = 8.53e-10*sqrt(fmax(1.0e-10,i_b1_new[i][j])+fmax(1.0e-10,i_b2_new[i][j]))*(1.053/3.0);
+        for(int m = 0;m<nbeams;m++)
+        {
+          edepplot[i][j]+=edep[i][j][m];
+        }
       }
     }
-  }
 
 }
 void cbet()

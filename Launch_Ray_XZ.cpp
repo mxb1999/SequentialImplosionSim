@@ -1,3 +1,4 @@
+
 #include "implSim.h"
 using namespace std;
 //initializing necessary arrays for the calculation
@@ -89,17 +90,19 @@ void rayLaunch()
       {
         if (myz[i] - z[j] <= ((0.5+1.0e-10)*dz + 1e-12) && myz[i] - z[j] >= -1*((0.5+1.0e-10)*dz + 1e-12))
         {
-
           thisz = j;
           break;
-         }
+        }
       }
-
+      if(i == 1)
+      {
+      }
       double linez[2]={myz[i-1], myz[i]};
       double linex[2]={myx[i-1], myx[i]};
       int lastx = 10000;
       int lastz = 10000;
       //iterating through the selected portions of the x spatial tracking arrays
+
       for(int j = thisx_m; j <= thisx_p;j++)
       {
         double currx = x[j]-dx/2;
@@ -115,7 +118,6 @@ void rayLaunch()
             crossesz[beam][raynum][numcrossing] = crossx;
             if(myx[i] < (xmax+dx/2 + 1e-11) && myx[i] > (xmin-dx/2 - 1e-12))
             {
-              xcnt++;
               boxTrack[beam][raynum][numcrossing][0] = 1;
               boxTrack[beam][raynum][numcrossing][1] = 1;
               boxes[beam][raynum][numcrossing][0] = thisx;
@@ -181,10 +183,9 @@ void rayLaunch()
 
           for(int j = 0; j < numstored;j++)
           {
-            if(!markedTrack[thisx][thisz][j][beam])
+            if(marked[thisx*(nz)+thisz][j*(nbeams)+beam] == 0)
             {
-              marked[thisx][thisz][j][beam] = raynum;
-              markedTrack[thisx][thisz][j][beam] = true;
+              marked[thisx*(nz)+thisz][j*(nbeams)+beam] = raynum + 1;
               present[thisx][thisz][beam] += 1.0;
               break;
             }
@@ -201,12 +202,9 @@ void rayLaunch()
           xtarg = myx[i]+(ztarg-myz[i-1])/slope;
           for(int j = 0; j < numstored;j++)
           {
-            if(!markedTrack[thisx][thisz][j][beam])
+            if(marked[thisx*(nz)+thisz][j*(nbeams)+beam] == 0)
             {
-              marked[thisx][thisz][j][beam] = raynum;
-
-              markedTrack[thisx][thisz][j][beam] = true;
-
+              marked[thisx*(nz)+thisz][j*(nbeams)+beam] = raynum + 1;
               present[thisx][thisz][beam] += 1.0;
               break;
             }
@@ -223,10 +221,9 @@ void rayLaunch()
 
           for(int j = 0; j < numstored;j++)
           {
-            if(!markedTrack[thisx][thisz][j][beam])
+            if(marked[thisx*(nz)+thisz][j*(nbeams)+beam] == 0)
             {
-              marked[thisx][thisz][j][beam] = raynum;
-              markedTrack[thisx][thisz][j][beam] = 1;
+              marked[thisx*(nz)+thisz][j*(nbeams)+beam] = raynum + 1;
               present[thisx][thisz][beam] += 1.0;
               break;
             }
@@ -297,42 +294,15 @@ void rayLaunch()
       if ( (myx[i] < (xmin-(dx/2.0))) || (myx[i] > (xmax+(dx/2.0))))
       {
         finalt = i-1;
-        delete [] rayx;
-        delete [] rayz;
-        rayx = new double[finalt]{0.0};
-        rayz = new double[finalt]{0.0};
-        amp_norm = new double[finalt]{0.0};
-        for(int j = 0; j < finalt;j++)
-        {
-          amp_norm[j] = amplitude_norm[j];
-          rayx[j] = myx[j];
-          rayz[j] = myz[j];
-        }
-        delete [] amp_norm;
+
         break;                  // "breaks" out of the i loop once the if condition is satisfied
       } else if ( (myz[i] < (zmin-(dz/2.0))) || (myz[i] > (zmax+(dz/2.0)))){
            // the "|" means "or" (symbol above the return key)
         finalt = i-1;
-        amp_norm = new double[finalt]{0.0};
-        delete [] rayx;
-        delete [] rayz;
-        rayx = new double[finalt]{0.0};
-        rayz = new double[finalt]{0.0};
-        for(int j = 0; j < finalt;j++)
-        {
-          amp_norm[j] = amplitude_norm[j];
-          rayx[j] = myx[j];
-          rayz[j] = myz[j];
-        }
-        delete [] amp_norm;
         break;
     }
   }
-  delete [] mytime;
-  delete [] nuei;
-  delete [] amplitude_norm;
-  delete [] markingx;
-  delete [] markingz;
+
 }
 
 

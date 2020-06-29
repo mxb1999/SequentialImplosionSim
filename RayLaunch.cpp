@@ -12,7 +12,6 @@ void trackRays()
   double kz0[nrays];
   double phase_x[nrays];
   double pow_x[nrays];
-  file.open("track.txt");
   span(phase_x,beam_min_z, beam_max_z, nrays);
   for(int i = 0; i < nrays; i++)
   {
@@ -62,6 +61,7 @@ void trackRays()
     x0[i] -= (dx/2)+(dt/courant_mult*c*0.5);
     z0[i] = zmin-(dt/courant_mult*c*0.5);
   }
+
   for(int i = 0; i < nrays;i++)
   {
     raynum = i;
@@ -75,6 +75,22 @@ void trackRays()
   }
 
   printf("%s\n", "Finished Launching Rays");
+  /*
+  for(int i = 0; i < nx;i++)
+  {
+    for(int j = 0; j < nz;j++)
+    {
+      for(int m = 0; m < numstored;m++)
+      {
+        for(int l = 0; l < nbeams;l++)
+        {
+          if(markedAccess(i,j,m,l))
+            cout << markedAccess(i,j,m,l) << endl;
+        }
+      }
+    }
+  }
+  */
 }
 
 
@@ -97,14 +113,14 @@ void updateIntersections()
       for(int m = 0; m < numstored; m++)
       {
         //if at least two beams are in the same x and z coordinates, update intersections
-        if(!markedTrack[i][j][m][0])
+        if(markedAccess(i,j,m,0) == 0)
         {
           break;
         }else
         {
           for(int l = 0; l < numstored; l++)
           {
-            if(!markedTrack[i][j][l][1])
+            if(markedAccess(i,j,l,1)== 0)
             {
               break;
             }else

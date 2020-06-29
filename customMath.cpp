@@ -51,6 +51,7 @@ double interp(double* xArr, double* yArr, double target, int xSize)
 double* interpArr(double* xArr, double* yArr, double* target, int xsize, int size)
 {
   double* result = new double[size];
+  #pragma omp parallel for
   for(int i = 0; i < size; i++)
   {
     result[i] = interp(xArr, yArr, target[i],xsize);
@@ -58,10 +59,12 @@ double* interpArr(double* xArr, double* yArr, double* target, int xsize, int siz
   }
   return result;
 }
+
 //fills an array of size num with evenly spaced double values between start and stop
 void span(double* target, double start, double stop, int num)
 {
   float increment = (stop-start)/(num - 1);
+  #pragma omp parallel for
   for(int i = 0; i < num; i++)
   {
     target[i] = start + (increment * i);

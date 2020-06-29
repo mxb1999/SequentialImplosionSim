@@ -2,6 +2,14 @@
 
 using namespace std;
 //main function called in program
+int markedAccess(int dim1, int dim2, int dim3, int dim4)
+{
+  return marked[dim1 * (nz) + dim2][dim3 * (nbeams) + dim4];
+}
+void markedWrite(int dim1, int dim2, int dim3, int dim4, int val)
+{
+   marked[dim1 * (nz) + dim2][dim3 * (nbeams) + dim4] = val;
+}
 int main(int argc, char const *argv[]) {
   /*
     Basic steps of the program:
@@ -21,13 +29,16 @@ int main(int argc, char const *argv[]) {
   cbet();
   auto stop3 = chrono::high_resolution_clock::now();
   auto start4 = chrono::high_resolution_clock::now();
-  updateH5();
+  #pragma omp critical
+  {
+    updateH5();
+  }
   auto stop4 = chrono::high_resolution_clock::now();
-  cout << "Initialize CPU Time: " << chrono::duration_cast<chrono::seconds>(stop1-start1).count() << " seconds" << endl;
-  cout << "Ray Launch CPU Time: " << chrono::duration_cast<chrono::seconds>(stop2-start2).count() << " seconds" << endl;
-  cout << "CBET CPU Time: " << chrono::duration_cast<chrono::seconds>(stop3-start3).count() << " seconds" << endl;
-  cout << "HDF5 Write CPU Time: " << chrono::duration_cast<chrono::seconds>(stop4-start4).count() << " seconds" << endl;
+  cout << "Initialize CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop1-start1).count() << " ms" << endl;
+  cout << "Ray Launch CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop2-start2).count() << " ms" << endl;
+  cout << "CBET CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop3-start3).count() << " ms" << endl;
+  cout << "HDF5 Write CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop4-start4).count() << " ms" << endl;
   cout << "_____________________________________________" << endl;
-  cout << "Total CPU Time: " << chrono::duration_cast<chrono::seconds>(stop4-start1).count() << " seconds" << endl;
+  cout << "Total CPU Time: " << chrono::duration_cast<chrono::milliseconds>(stop4-start1).count() << " ms" << endl;
   return 0;
 }

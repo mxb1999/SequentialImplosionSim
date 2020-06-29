@@ -37,7 +37,6 @@ int determineType(string type)
 };
 void writeArr(void* arr, int type, H5File* store, string name, int dimnum, int* dimlist)
 {
-  cout << name << endl;
   int prod = 1;
   for(int i = 0; i < dimnum;i++)
   {
