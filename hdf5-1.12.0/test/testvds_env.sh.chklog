@@ -1,0 +1,130 @@
+============================
+testvds_env.sh  Test Log
+============================
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix
+Testing virtual dataset with file version bounds: (earliest, v110):
+Config: same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Testing virtual dataset with file version bounds: (earliest, latest):
+Config: same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Testing virtual dataset with file version bounds: (v18, v110):
+Config: same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Testing virtual dataset with file version bounds: (v18, latest):
+Config: same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Testing virtual dataset with file version bounds: (v110, v110):
+Config: same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Testing virtual dataset with file version bounds: (v110, latest):
+Config: same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Testing virtual dataset with file version bounds: (latest, latest):
+Config: same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, same source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+Config: closed source dataset, different source file, reopen virtual file
+Testing basic virtual dataset I/O via H5Pset_vds_prefix(): all selection with ENV prefix PASSED
+All virtual dataset tests passed.
+Test prefix for HDF5_VDS_PREFIX PASSED
+0.06user 0.00system 0:00.07elapsed 101%CPU (0avgtext+0avgdata 9376maxresident)k
+0inputs+1632outputs (0major+2849minor)pagefaults 0swaps
+
+Finished testing testvds_env.sh 
+============================

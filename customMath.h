@@ -3,23 +3,12 @@
 #include <fstream>
 #include <cmath>
 using namespace std;
-class interpFunc
-{
-private:
-  double* x;
-  double* y;
-  int n;
-public:
-  int binSearch(double tgt, double* in, int index, int size);
-  double fitLine(double tgt, int index);
-  double getInterp(double tgt);
-  double* xData(){return x;};
-  double* yData(){return y;};
-  int getSize(){return n;};
-  interpFunc(double* inX, double* inY, int size)
-  {
-    x = inX;
-    y = inY;
-    n = size;
-  };
-};
+//custom math functions used in simulation code
+extern int binSearch(double tgt, double* in, int index, int size);
+extern double interp(double* xArr, double* yArr, double target, int xSize);
+extern double* interpArr(double* xArr, double* yArr, double* target, int xsize, int size);
+extern bool areEqual(double a, double b);
+extern int compareDub(double a, double b);
+extern void span(double* target, double start, double stop, int num);
+extern double average(vector<double> tgt, int size);
+extern double stdDev(vector<double> tgt, int size);

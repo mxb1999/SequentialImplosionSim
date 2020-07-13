@@ -1,0 +1,27 @@
+============================
+testvdsswmr.sh  Test Log
+============================
+
+###############################################################################
+## Basic VDS SWMR test - writing to a tiled plane
+###############################################################################
+launch the generator
+launch the 6 SWMR VDS writers (1 per source)
+launch 5 SWMR readers
+SWMR writer eSxWiSMtWSReSMSW dWRWMw M MRrsRwR iu r wtcwiwrecrtrireieit strteese erxfrer iu x etleiexelxtxidyieit 
+tdtese edudsd c u scscsueucucsceccscscefesesusfsslsusflflfuyulul
+lylll
+lyyy
+
+
+SWMR reader exited successfully
+SWMR reader exited successfully
+SSWSWMWMRMR R r rereaeadadederer r e exexixititeteded d s susucuccccecesessssfsfufulullllyly
+y
+
+VDS SWMR tests passed.
+251.10user 7.00system 0:24.95elapsed 1034%CPU (0avgtext+0avgdata 12084maxresident)k
+0inputs+1272outputs (0major+1960386minor)pagefaults 0swaps
+
+Finished testing testvdsswmr.sh 
+============================

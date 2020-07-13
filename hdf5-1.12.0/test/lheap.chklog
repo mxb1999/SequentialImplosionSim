@@ -1,0 +1,12 @@
+============================
+Test log for lheap 
+============================
+Testing local heap write                                               PASSED
+Testing local heap read                                                PASSED
+Testing opening pre-created file with non-default sizes                PASSED
+All local heap tests passed.
+0.01user 0.00system 0:00.01elapsed 111%CPU (0avgtext+0avgdata 8376maxresident)k
+8inputs+8outputs (0major+2263minor)pagefaults 0swaps
+
+Finished testing lheap 
+============================

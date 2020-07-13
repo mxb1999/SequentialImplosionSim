@@ -3,52 +3,89 @@
 #include <fstream>
 #include <cmath>
 #include "customMath.h"
+#include <limits>
+//implementations of custom math functions
+//binary search algorithm, searches given array in log(n) time
+int binSearch(double tgt, double* in, int index, int size)
+{
+  double left = in[index];
+  double mid = in[index + size/2];
+  if(size == 0)
+  {
+    return index;
+  }
 
-int interpFunc::binSearch(double tgt, double* in, int index, int size)
-{
-  if(tgt > *(in+size-1) || tgt < *(in))
+  if(tgt > left && tgt < mid)
   {
-    std::cout << "-1 Returned" << '\n';
-    return -1;
+    return binSearch(tgt, in, index,size/2);
   }
-  double comp = *(in+index+size/2);
-  double plus = *(in+index+size/2+1);
-  double minus = *(in+index+size/2-1);
-  if(tgt > comp)
+  if(tgt > left && tgt > mid)
   {
-    if(tgt > plus)
-    {
-      return binSearch(tgt, in, index+size/2,size/2);
-    }else
-    {
-      return index+size/2;
-    }
+    return binSearch(tgt, in, index+size/2,size - 1);
   }
-  if(tgt < comp)
-  {
-    if(tgt < minus)
-    {
-      return binSearch(tgt, in, index,size/2);
-    }else
-    {
-      return index+size/2 - 1;
-    }
-  }
-  return index+size/2;
+
+  return -1;
 };
-double interpFunc::fitLine(double tgt, int index)
+
+//returns the interpolated value from the given sorted arrays
+//Note for Prof. Sefkow: This is the array performing differently from Yorick
+//It functions identically to other implementations of interp functions online
+double interp(double* xArr, double* yArr, double target, int xSize)
 {
-  double m = (*(y+index+1)-*(y+index))/(*(x+index+1)-*(x+index));
-  double b = *(y+index)-m*(*(x+index));
-  return m*tgt + b;
-};
-double interpFunc::getInterp(double tgt)
-{
-  int index = binSearch(tgt, this->x, 0, this->n);
-  if(index == -1)
+
+  if(target <= xArr[0])
   {
-    std::cout << "Value not in range of function" << '\n';
-    return -1.0
+      return yArr[0];
   }
-  return fitLine(tgt, index);
+  if(target >= xArr[xSize-1])
+  {
+      return yArr[xSize-1];
+  }
+  int index = binSearch(target, xArr, 0, xSize);
+  double m = (yArr[index+1]-yArr[index])/(xArr[index+1]-xArr[index]);
+  double b = yArr[index]-m*xArr[index];
+  return m*target+b;
 };
+//used for interpolating all values of a given array, relies on previous interp function
+//xsize is the length of "xArr" and "yArr", size is the length of the target array
+double* interpArr(double* xArr, double* yArr, double* target, int xsize, int size)
+{
+  double* result = new double[size];
+  #pragma omp parallel for
+  for(int i = 0; i < size; i++)
+  {
+    result[i] = interp(xArr, yArr, target[i],xsize);
+
+  }
+  return result;
+}
+
+//fills an array of size num with evenly spaced double values between start and stop
+void span(double* target, double start, double stop, int num)
+{
+  float increment = (stop-start)/(num - 1);
+  #pragma omp parallel for
+  for(int i = 0; i < num; i++)
+  {
+    target[i] = start + (increment * i);
+  }
+}
+double average(vector<double> tgt, int size)
+{
+  int sum = 0;
+  for(int i = 0; i < size; i++)
+  {
+    sum += tgt[i];
+  }
+  return sum/size;
+}
+double stdDev(vector<double> tgt, int size)
+{
+  double avg = average(tgt, size);
+  double sum = 0;
+  for(int i = 0; i < size;i++)
+  {
+    sum += pow(tgt[i]-avg, 2);
+  }
+  return sqrt(sum/(size-1));
+}
