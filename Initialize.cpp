@@ -15,8 +15,8 @@ void initialize()
   dedendx = new double*[nx]; //nx nz
   truemark = new int**[nbeams*nrays];
   dedendz = new double*[nx]; //nx nz
-  x = new double[nx]; //nx nz
-  z = new double[nz]; //nx nz
+  x = new double[nx]{0}; //nx nz
+  z = new double[nz]{0}; //nx nz
   eden = new double*[nx]; //nx nz
   edep = new double**[nx+2]; //nx+2 nz+2 nbeams
   present = new int**[nx]; //nx nz nbeams
@@ -54,38 +54,38 @@ void initialize()
     edep[i] = new double*[nz+2];
       for(int j = 0; j < nz+2; j++)
       {
-        edep[i][j] = new double[nbeams];
+        edep[i][j] = new double[nbeams]{0};
       }
   }
   auto interim = chrono::high_resolution_clock::now();
   for(int i = 0; i < numstored*nbeams; i++)
   {
-    marked[i] = new int[nx*nz];
+    marked[i] = new int[nx*nz]{0};
   }
   for(int i = 0; i < nx; i++)
   {
-    intersections[i] = new double[nz];
-    eden[i] = new double[nz];
-    machnum[i] = new double[nz];
-    dedendx[i] = new double[nz];
-    dedendz[i] = new double[nz];
+    intersections[i] = new double[nz]{0};
+    eden[i] = new double[nz]{0};
+    machnum[i] = new double[nz]{0};
+    dedendx[i] = new double[nz]{0};
+    dedendz[i] = new double[nz]{0};
     present[i] = new int*[nz];
     //marked[i] = new int**[nz];
     W1_storage[i] = new double*[nz];
     W2_storage[i] = new double*[nz];
-    u_flow[i] = new double[nz];
-    W1[i] = new double[nz];
-    W2[i] = new double[nz];
-    W1_init[i] = new double[nz];
-    W2_init[i] = new double[nz];
-    W1_new[i] = new double[nz];
-    W2_new[i] = new double[nz];
-    wpe[i] = new double[nz];
+    u_flow[i] = new double[nz]{0};
+    W1[i] = new double[nz]{0};
+    W2[i] = new double[nz]{0};
+    W1_init[i] = new double[nz]{0};
+    W2_init[i] = new double[nz]{0};
+    W1_new[i] = new double[nz]{0};
+    W2_new[i] = new double[nz]{0};
+    wpe[i] = new double[nz]{0};
     for(int j = 0; j < nz; j++)
     {
         present[i][j] = new int[nbeams]{0};
-        W1_storage[i][j] = new double[nrays];
-        W2_storage[i][j] = new double[nrays];
+        W1_storage[i][j] = new double[nrays]{0};
+        W2_storage[i][j] = new double[nrays]{0};
       }
   }
   auto check2 = chrono::high_resolution_clock::now();
@@ -110,7 +110,6 @@ void initialize()
           crossesx[i][j] = new double[ncrossings]{0};
           boxes[i][j] = new int*[ncrossings]{0};
           ints[i][j] = new int[ncrossings]{0};
-          #pragma omp parallel for num_threads(2)
             for(int m = 0; m < ncrossings;m++)
             {
               boxes[i][j][m] = new int[2]{0};

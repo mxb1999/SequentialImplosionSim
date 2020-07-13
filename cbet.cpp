@@ -53,18 +53,13 @@ void gain_CBETSeq()
     {
       for(int m = 0; m < ncrossings;m++)
       {
-        cout << "check1" << endl;
         //marked array has dimensions nx nz numstored nbeams
         int ix = boxes[i][j][m][0] - 1;
         int iz = boxes[i][j][m][1] - 1;
-        cout << "check 1.5" << endl;
-        cout << (ix >= 0 && iz >= 0) << endl;
           if((ix >= 0 && iz >= 0))
           {
-            cout << "check in" << endl;
             if(intersections[ix][iz] != 0)
             {
-            cout << "check2" << endl;
 
             storeDup[ix][iz]++;
             vector<int> nonzeros1;
@@ -115,14 +110,12 @@ void gain_CBETSeq()
           }
 
         int n2limit = fmin(present[ix][iz][0],numrays2);
-        cout << "check3" << endl;
 
         for ( int n2 = 0; n2 < n2limit; n2++)
         {
           double ne = eden[ix][iz];
           double epsilon = 1.0-ne/ncrit;
           double kmag = (omega/c)*sqrt(epsilon);         // magnitude of wavevector
-          cout << "check4" << endl;
 
           double kx1 = kmag * dkx[i][j][m] / (dkmag[i][j][m] + 1.0e-10);
           double kx2 = kmag * dkx[i+1][nonzeros2[n2]][mark2Copy[n2]] / (dkmag[i+1][nonzeros2[n2]][mark2Copy[n2]] + 1.0e-10);
@@ -132,7 +125,6 @@ void gain_CBETSeq()
           double kiaw = sqrt(pow(kx2-kx1,2.0)+pow(kz2-kz1,2.0));
         // magnitude of the difference between the two vectors
         cout << nonzeros2[n2]<< endl;
-        cout << "check5" << endl;
 
           double ws = kiaw*cs;            // acoustic frequency, cs is a constant
           double omega1= omega;  // laser frequency difference. To start, just zero.
@@ -150,7 +142,6 @@ void gain_CBETSeq()
                           // new energy of crossing (PROBE) ray (beam 2)
           //updating arrays based upon the calculated magnitude changes
           //Chronological Issue for Parallelization: W1_new and W2_new can be written to at ix and iz multiple times'
-          cout << "check6" << endl;
 
           if (dkmag[i+1][nonzeros2[n2]][mark2Copy[n2]] >= 1.0*dx)
           {
@@ -161,7 +152,6 @@ void gain_CBETSeq()
 
               W2_storage[ix][iz][j] =W2_new[ix][iz];
           }
-          cout << "check7" << endl;
 
           }
         }}
@@ -460,7 +450,8 @@ void cbet()
     auto inter = chrono::high_resolution_clock::now();
     double prev = 1;
     maxDev = 0;
-    double*** i_pass = update_CBETSeq(i_b);
+    double*** i_pass;
+    i_pass = update_CBETSeq(i_b);
 
    while(abs(maxDev - prev) > convergence)
     {
@@ -493,6 +484,7 @@ void cbet()
           }
         }
       }
+      /*
       for(int i = 0; i < nx; i++)
   {
     for(int j = 0; j < nz; j++)
@@ -503,4 +495,5 @@ void cbet()
 	    }
     }
   }
+  */
 }
