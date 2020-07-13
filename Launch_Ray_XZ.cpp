@@ -2,17 +2,29 @@
 #include "implSim.h"
 using namespace std;
 //initializing necessary arrays for the calculation
-void initializeArrXZ(double x_init, double z_init, double kx_init, double kz_init)
+void initializeArrXZ(double x_init, double z_init, double kx_init, double kz_init, int raynum, double urayinit)
 {
   //Launch_Ray_XZ Array Declaration
-  thisx_0 = 0;
-  thisz_0 = 0;
-  mytime = new double[nt]{0.0};
+  int thisx_0 = 0;
+  int thisz_0 = 0;
+  int thisx;
+  int thisz;
+  int thisx_00 = 0;
+  int thisz_00 = 0;
+  double* uray = new double[nt]{0.0};
+  double* myx = new double[nt]{0.0};
+  double* myz = new double[nt]{0.0};
+  double* mykx = new double[nt]{0.0};
+  double* mykz = new double[nt]{0.0};
+  double* myvx = new double[nt]{0.0};
+  double* myvz = new double[nt]{0.0};
+  double* mytime = new double[nt]{0.0};
+  uray[0] = urayinit;
   span(mytime, dt, nt*dt, nt);
-  amplitude_norm= new double[nt]{0.0};
-  markingx = new double[nt]{0.0};
-  markingz = new double[nt]{0.0};
-  nuei = new double[nt]{0.0};
+  double* amplitude_norm= new double[nt]{0.0};
+  double* markingx = new double[nt]{0.0};
+  double* markingz = new double[nt]{0.0};
+  double* nuei = new double[nt]{0.0};
   //Initializing Arrays
   for(int i = 0; i < nt; i++)
   {
@@ -43,8 +55,8 @@ void initializeArrXZ(double x_init, double z_init, double kx_init, double kz_ini
       break;
     }
   }
-  k = sqrt((pow(omega,2.0)-pow(wpe[thisx_0][thisz_0],2.0))/pow(c,2.0));
-  knorm = sqrt(pow(kx_init,2.0)+pow(kz_init,2.0));
+  double k = sqrt((pow(omega,2.0)-pow(wpe[thisx_0][thisz_0],2.0))/pow(c,2.0));
+  double knorm = sqrt(pow(kx_init,2.0)+pow(kz_init,2.0));
   mykx[0]=(kx_init/knorm)*k;			// Normalized value for the ray's initial k_x
   mykz[0]=(kz_init/knorm)*k;			// Normalized value for the ray's initial k_z
   myvx[0] = pow(c,2.0)*mykx[0]/omega;                   // v_group, group velocity (dw/dk) from D(k,w).
@@ -52,10 +64,6 @@ void initializeArrXZ(double x_init, double z_init, double kx_init, double kz_ini
   markingx[0] = thisx_0;
   markingz[0] = thisz_0;
 
-}
-//Launching the rays
-void rayLaunch()
-{
   //__________Time Stepping__________
     int numcrossing = 0;
     //looping through time intervals
@@ -94,9 +102,6 @@ void rayLaunch()
           break;
         }
       }
-      if(i == 1)
-      {
-      }
       double linez[2]={myz[i-1], myz[i]};
       double linex[2]={myx[i-1], myx[i]};
       int lastx = 10000;
@@ -113,15 +118,13 @@ void rayLaunch()
           double crossx = m*currx+b;
           if(abs(crossx-lastz)>1.0e-20)
           {
-            ints[beam][raynum][numcrossing]=uray[i];
-            crossesx[beam][raynum][numcrossing] = currx;
-            crossesz[beam][raynum][numcrossing] = crossx;
+              ints[beam][raynum][numcrossing]=uray[i];
+              crossesx[beam][raynum][numcrossing] = currx;
+              crossesz[beam][raynum][numcrossing] = crossx;
             if(myx[i] < (xmax+dx/2 + 1e-11) && myx[i] > (xmin-dx/2 - 1e-12))
             {
-              boxTrack[beam][raynum][numcrossing][0] = 1;
-              boxTrack[beam][raynum][numcrossing][1] = 1;
-              boxes[beam][raynum][numcrossing][0] = thisx;
-              boxes[beam][raynum][numcrossing][1] = thisz;
+                boxes[beam][raynum][numcrossing][0] = thisx+1;
+                boxes[beam][raynum][numcrossing][1] = thisz+1;
             }
             lastx = currx;
             numcrossing += 1;
@@ -142,15 +145,16 @@ void rayLaunch()
             double crossz = m*currz+b;
             if(abs(crossz-lastx)>1.0e-20)
             {
-              ints[beam][raynum][numcrossing]=uray[i];
-              crossesz[beam][raynum][numcrossing] = currz;
-              crossesx[beam][raynum][numcrossing] = crossz;
+                ints[beam][raynum][numcrossing]=uray[i];
+                crossesz[beam][raynum][numcrossing] = currz;
+                crossesx[beam][raynum][numcrossing] = crossz;
+                cout << currz << endl;
+                cout << crossz << endl;
+
               if(myz[i] < (zmax+dz/2 +1e-11) && myz[i] > (zmin-dz/2-1e-11))
               {
-                boxTrack[beam][raynum][numcrossing][0] = 1;
-                boxTrack[beam][raynum][numcrossing][1] = 1;
-                boxes[beam][raynum][numcrossing][0] = thisx;
-                boxes[beam][raynum][numcrossing][1] = thisz;
+                  boxes[beam][raynum][numcrossing][0] = thisx+1;
+                  boxes[beam][raynum][numcrossing][1] = thisz+1;
               }
               lastz = currz;
               numcrossing += 1;
@@ -163,7 +167,9 @@ void rayLaunch()
         markingx[i] = thisx;
         markingz[i] = thisz;
         //ensuring that the beams are not identical
-
+        double ztarg;
+        double xtarg;
+        double slope;
         if(markingx[i] != markingx[i-1] && markingz[i] != markingz[i-1])
         {
           ztarg = z[thisz] - (dz/2.0);
@@ -181,12 +187,14 @@ void rayLaunch()
           slope = (myx[i] - myx[i-1])/(myz[i] - myz[i-1]+1.0e-10);
           ztarg = myz[i-1]+(xtarg-myx[i-1])/slope;
 
-          for(int j = 0; j < numstored;j++)
+          for(int j = 0; j < nrays;j++)
           {
-            if(marked[thisx*(nz)+thisz][j*(nbeams)+beam] == 0)
+            if(truemark[beam*nrays + raynum][thisx*(nz) + thisz][j] == 0)
             {
-              marked[thisx*(nz)+thisz][j*(nbeams)+beam] = raynum + 1;
-              present[thisx][thisz][beam] += 1.0;
+              #pragma omp atomic write
+                truemark[beam*nrays + raynum][thisx*(nz) + thisz][j] = 1;
+              #pragma omp atomic update
+                present[thisx][thisz][beam] += 1.0;
               break;
             }
           }
@@ -200,12 +208,14 @@ void rayLaunch()
           }
           slope = (myz[i] - myz[i-1])/(myx[i] - myx[i-1]+1.0e-10);
           xtarg = myx[i]+(ztarg-myz[i-1])/slope;
-          for(int j = 0; j < numstored;j++)
+          for(int j = 0; j < nrays;j++)
           {
-            if(marked[thisx*(nz)+thisz][j*(nbeams)+beam] == 0)
+            if(truemark[beam*nrays + raynum][thisx*(nz) + thisz][j] == 0)
             {
-              marked[thisx*(nz)+thisz][j*(nbeams)+beam] = raynum + 1;
-              present[thisx][thisz][beam] += 1.0;
+              #pragma omp atomic write
+                truemark[beam*nrays + raynum][thisx*(nz) + thisz][j] = 1;
+              #pragma omp atomic update
+                present[thisx][thisz][beam] += 1.0;
               break;
             }
           }
@@ -219,12 +229,14 @@ void rayLaunch()
           slope = (myx[i] - myx[i-1])/(myz[i] - myz[i-1]+1.0e-10);
           ztarg = myz[i]+(xtarg-myx[i-1])/slope;
 
-          for(int j = 0; j < numstored;j++)
+          for(int j = 0; j < nrays;j++)
           {
-            if(marked[thisx*(nz)+thisz][j*(nbeams)+beam] == 0)
+            if(truemark[beam*nrays + raynum][thisx*(nz) + thisz][j] == 0)
             {
-              marked[thisx*(nz)+thisz][j*(nbeams)+beam] = raynum + 1;
-              present[thisx][thisz][beam] += 1.0;
+              #pragma omp atomic write
+                truemark[beam*nrays + raynum][thisx*(nz) + thisz][j] = 1;
+              #pragma omp atomic update
+                present[thisx][thisz][beam] += 1.0;
               break;
             }
           }
@@ -237,7 +249,7 @@ void rayLaunch()
   	    double increment = uray[i];
         double xp = (myx[i] - (x[thisx]+dx/2.0))/dx;
         double zp = (myz[i] - (z[thisz]+dz/2.0))/dz;
-
+        //cout << increment << endl;
         if ( xp >= 0 && zp >= 0 ){
         double dl = zp;
         double dm = xp;
@@ -245,10 +257,14 @@ void rayLaunch()
         double a2 = (1.0-dl)*dm;		// green	: (x+1, z  )
         double a3 = dl*(1.0-dm);		// yellow	: (x  , z+1)
         double a4 = dl*dm;			// red 		: (x+1, z+1)
-        edep[thisx+1][thisz+1][beam] += a1*increment;	// blue
-        edep[thisx+1+1][thisz+1][beam] += a2*increment;	// green
-        edep[thisx+1][thisz+1+1][beam] += a3*increment;	// yellow
-        edep[thisx+1+1][thisz+1+1][beam] += a4*increment;	// red
+        #pragma omp atomic update
+          edep[thisx+1][thisz+1][beam] += a1*increment;	// blue
+        #pragma omp atomic update
+          edep[thisx+1+1][thisz+1][beam] += a2*increment;	// green
+        #pragma omp atomic update
+          edep[thisx+1][thisz+1+1][beam] += a3*increment;	// yellow
+        #pragma omp atomic update
+          edep[thisx+1+1][thisz+1+1][beam] += a4*increment;	// red
       } else if ( xp < 0 && zp >= 0 ){
         double dl = zp;
         double dm = abs(xp);		// because xp < 0
@@ -256,10 +272,14 @@ void rayLaunch()
         double a2 = (1.0-dl)*dm;		// green	: (x-1, z  )
         double a3 = dl*(1.0-dm);		// yellow	: (x  , z+1)
         double a4 = dl*dm;			// red 		: (x-1, z+1)
-        edep[thisx+1][thisz+1][beam] += a1*increment;	// blue
-        edep[thisx-1+1][thisz+1][beam] += a2*increment;	// green
-        edep[thisx-1+1][thisz+1+1][beam] += a4*increment;	// red
-        edep[thisx+1][thisz+1+1][beam] += a3*increment;	// yellow
+        #pragma omp atomic update
+          edep[thisx+1][thisz+1][beam] += a1*increment;	// blue
+        #pragma omp atomic update
+          edep[thisx-1+1][thisz+1][beam] += a2*increment;	// green
+        #pragma omp atomic update
+          edep[thisx-1+1][thisz+1+1][beam] += a4*increment;	// red
+        #pragma omp atomic update
+          edep[thisx+1][thisz+1+1][beam] += a3*increment;	// yellow
 
       } else if ( xp >= 0 && zp < 0 ){
         double dl = abs(zp);		// because zp < 0
@@ -268,10 +288,14 @@ void rayLaunch()
         double a2 = (1.0-dl)*dm;		// green	: (x+1, z  )
         double a3 = dl*(1.0-dm);		// yellow	: (x  , z-1)
         double a4 = dl*dm;			// red 		: (x+1, z-1)
-        edep[thisx+1][thisz-1+1][beam] += a3*increment;	// yellow
-        edep[thisx+1+1][thisz-1+1][beam] += a4*increment;	// red
-        edep[thisx+1][thisz+1][beam] += a1*increment;	// blue
-        edep[thisx+1+1][thisz+1][beam] += a2*increment;	// green
+        #pragma omp atomic update
+          edep[thisx+1][thisz-1+1][beam] += a3*increment;	// yellow
+        #pragma omp atomic update
+          edep[thisx+1+1][thisz-1+1][beam] += a4*increment;	// red
+        #pragma omp atomic update
+          edep[thisx+1][thisz+1][beam] += a1*increment;	// blue
+        #pragma omp atomic update
+          edep[thisx+1+1][thisz+1][beam] += a2*increment;	// green
       } else if ( xp < 0 && zp < 0 ){
         double dl = abs(zp);		// because zp < 0
         double dm = abs(xp);		// because xp < 0
@@ -279,12 +303,17 @@ void rayLaunch()
         double a2 = (1.0-dl)*dm;		// green	: (x-1, z  )
         double a3 = dl*(1.0-dm);		// yellow	: (x  , z-1)
         double a4 = dl*dm;			// red 		: (x-1, z-1)
+        #pragma omp atomic update
         edep[thisx+1][thisz+1][beam] += a1*increment;	// blue
+        #pragma omp atomic update
         edep[thisx+1][thisz+1-1][beam] += a3*increment;	// yellow
+        #pragma omp atomic update
         edep[thisx+1-1][thisz+1][beam] += a2*increment;	// green
+        #pragma omp atomic update
         edep[thisx+1-1][thisz+1-1][beam] += a4*increment;	// red
       } else {
         double store = edep[thisx][thisz][0];
+        #pragma omp atomic write
         edep[thisx][thisz][0] = store + (nuei[i] * (*(eden[thisx]+thisz))/ncrit * uray[i-1]*dt);
         cout << "***** ERROR in interpolation of laser deposition to grid!! *****" << endl;
         break;
@@ -293,12 +322,9 @@ void rayLaunch()
       mytime[i] = dt*i;
       if ( (myx[i] < (xmin-(dx/2.0))) || (myx[i] > (xmax+(dx/2.0))))
       {
-        finalt = i-1;
-
         break;                  // "breaks" out of the i loop once the if condition is satisfied
       } else if ( (myz[i] < (zmin-(dz/2.0))) || (myz[i] > (zmax+(dz/2.0)))){
            // the "|" means "or" (symbol above the return key)
-        finalt = i-1;
         break;
     }
   }
@@ -311,9 +337,8 @@ void rayLaunch()
 
 
 //use two threads here
-void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init)
+void launch_ray_XZ(double x_init, double z_init, double kx_init, double kz_init, int raynum, double urayinit)
 {
-  initializeArrXZ(x_init,z_init, kx_init, kz_init);
-  rayLaunch();
+  initializeArrXZ(x_init,z_init, kx_init, kz_init, raynum,urayinit);
 
 }

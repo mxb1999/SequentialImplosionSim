@@ -2,14 +2,7 @@
 
 using namespace std;
 //main function called in program
-int markedAccess(int dim1, int dim2, int dim3, int dim4)
-{
-  return marked[dim1 * (nz) + dim2][dim3 * (nbeams) + dim4];
-}
-void markedWrite(int dim1, int dim2, int dim3, int dim4, int val)
-{
-   marked[dim1 * (nz) + dim2][dim3 * (nbeams) + dim4] = val;
-}
+
 int main(int argc, char const *argv[]) {
   /*
     Basic steps of the program:

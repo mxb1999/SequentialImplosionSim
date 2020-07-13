@@ -70,3 +70,22 @@ void span(double* target, double start, double stop, int num)
     target[i] = start + (increment * i);
   }
 }
+double average(vector<double> tgt, int size)
+{
+  int sum = 0;
+  for(int i = 0; i < size; i++)
+  {
+    sum += tgt[i];
+  }
+  return sum/size;
+}
+double stdDev(vector<double> tgt, int size)
+{
+  double avg = average(tgt, size);
+  double sum = 0;
+  for(int i = 0; i < size;i++)
+  {
+    sum += pow(tgt[i]-avg, 2);
+  }
+  return sqrt(sum/(size-1));
+}

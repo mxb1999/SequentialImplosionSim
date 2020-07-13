@@ -4,11 +4,12 @@
 
 
 //defining constants needed throughout the simulation
-const int nx=201; const float xmin = -5.0e-4; const float xmax=5.0e-4; const float dx = (xmax-xmin)/(nx-1);
-const int nz=201; const float zmin = -5.0e-4; const float zmax=5.0e-4; const float dz = (zmax-zmin)/(nz-1);
+const int nx=10; const float xmin = -5.0e-4; const float xmax=5.0e-4; const float dx = (xmax-xmin)/(nx-1);
+const int nz=10; const float zmin = -5.0e-4; const float zmax=5.0e-4; const float dz = (zmax-zmin)/(nz-1);
 const int nbeams = 2;
 const int threads = 12;
 const int rays_per_zone = 5 ;
+const double convergence = 1e-3;
 const double c = 29979245800.0;
 static double injected = 0.0;
 const double intensity = 2.0e15;

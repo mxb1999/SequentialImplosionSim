@@ -10,3 +10,5 @@ extern double* interpArr(double* xArr, double* yArr, double* target, int xsize, 
 extern bool areEqual(double a, double b);
 extern int compareDub(double a, double b);
 extern void span(double* target, double start, double stop, int num);
+extern double average(vector<double> tgt, int size);
+extern double stdDev(vector<double> tgt, int size);

@@ -6,17 +6,14 @@ using namespace std;
 
 void initialize()
 {
-  uray = new double[nt];
-  for(int i = 0; i < nt; i++)
-  {
-    uray[i] = 1.0;
-  }
+
   auto start = chrono::high_resolution_clock::now();
 
   //dynamic allocation (using pointers to access arrays so the stack is not filled)
   intersections = new double*[nx]; //nx nz
-  marked = new int*[nx*nz]{0}; //nx nz numstored nbeams
+  marked = new int*[nbeams*numstored]; //numstored nbeams nx nz
   dedendx = new double*[nx]; //nx nz
+  truemark = new int**[nbeams*nrays];
   dedendz = new double*[nx]; //nx nz
   x = new double[nx]; //nx nz
   z = new double[nz]; //nx nz
@@ -25,7 +22,6 @@ void initialize()
   present = new int**[nx]; //nx nz nbeams
   machnum = new double*[nx]; //nx nz
   boxes = new int***[nbeams]; //nbeams nrays ncrossings 2
-  boxTrack = new bool***[nbeams]; //nbeams nrays ncrossings 2
   W1_storage = new double**[nx]; //nx nz numstored
   W2_storage = new double**[nx]; //nx nz numstored
   u_flow = new double*[nx]; //nx nz
@@ -38,19 +34,20 @@ void initialize()
   W2_init = new double*[nx];//nx nz
   W1_new = new double*[nx];//nx nz
   W2_new = new double*[nx];//nx nz
-  i_b1 = new double*[nx];//nx+2 nz+2
-  i_b2 = new double*[nx];//nx+2 nz+2
+  i_b = new double**[nbeams]; //nbeams nx nz
   wpe = new double*[nx]; //nx nz
   crossesz = new double**[nbeams]; //nbeams nrays ncrossings
   crossesx = new double**[nbeams]; //nbeams nrays ncrossings
   ints = new int**[nbeams]; //nbeams nrays ncrossings
-  myx= new double[nt];
-  myz = new double[nt];
-  mykx=new double[nt];
-  mykz= new double[nt];
-  myvx=new double[nt];
-  myvz= new double[nt];
 
+  for(int i = 0; i < nbeams*nrays;i++)
+  {
+    truemark[i] = new int*[nx*nz];
+    for(int j = 0; j < nx*nz;j++)
+    {
+      truemark[i][j] = new int[nrays]{0};
+    }
+  }
   auto check1 = chrono::high_resolution_clock::now();
   for(int i = 0; i < nx+2; i++)
   {
@@ -61,11 +58,10 @@ void initialize()
       }
   }
   auto interim = chrono::high_resolution_clock::now();
-  for(int i = 0; i < nx*nz; i++)
+  for(int i = 0; i < numstored*nbeams; i++)
   {
-    marked[i] = new int[numstored*nbeams];
+    marked[i] = new int[nx*nz];
   }
-  #pragma omp parallel for num_threads(2)
   for(int i = 0; i < nx; i++)
   {
     intersections[i] = new double[nz];
@@ -85,44 +81,39 @@ void initialize()
     W1_new[i] = new double[nz];
     W2_new[i] = new double[nz];
     wpe[i] = new double[nz];
-    i_b1[i] = new double[nz];
-    i_b2[i] = new double[nz];
-    #pragma omp parallel for num_threads(2)
     for(int j = 0; j < nz; j++)
     {
         present[i][j] = new int[nbeams]{0};
-        W1_storage[i][j] = new double[numstored];
-        W2_storage[i][j] = new double[numstored];
+        W1_storage[i][j] = new double[nrays];
+        W2_storage[i][j] = new double[nrays];
       }
   }
   auto check2 = chrono::high_resolution_clock::now();
   auto tester = chrono::high_resolution_clock::now();
-  #pragma omp parallel for num_threads(2)
     for(int i = 0; i < nbeams; i++)
     {
       boxes[i] = new int**[nrays];
-      boxTrack[i] = new bool**[nrays];
       dkx[i] = new double*[nrays];
       dkz[i] = new double*[nrays];
       dkmag[i] = new double*[nrays];
       crossesz[i] = new double*[nrays];
       crossesx[i] = new double*[nrays];
       ints[i] = new int*[nrays];
+      i_b[i] = new double*[nx];
         for(int j = 0; j < nrays; j++)
         {
-          dkx[i][j] = new double[ncrossings-1];
-          dkz[i][j] = new double[ncrossings-1];
-          dkmag[i][j] = new double[ncrossings-1];
-          crossesz[i][j] = new double[ncrossings];
-          crossesx[i][j] = new double[ncrossings];
-          boxes[i][j] = new int*[ncrossings];
-          boxTrack[i][j] = new bool*[ncrossings];
+          i_b[i][j] = new double[nz]{0};
+          dkx[i][j] = new double[ncrossings-1]{0};
+          dkz[i][j] = new double[ncrossings-1]{0};
+          dkmag[i][j] = new double[ncrossings-1]{0};
+          crossesz[i][j] = new double[ncrossings]{0};
+          crossesx[i][j] = new double[ncrossings]{0};
+          boxes[i][j] = new int*[ncrossings]{0};
           ints[i][j] = new int[ncrossings]{0};
           #pragma omp parallel for num_threads(2)
-            for(int m = 0; m < nx*3;m++)
+            for(int m = 0; m < ncrossings;m++)
             {
               boxes[i][j][m] = new int[2]{0};
-              boxTrack[i][j][m] = new bool[2]{false};
             }
         }
     }

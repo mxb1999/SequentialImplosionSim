@@ -195,13 +195,8 @@ void updateH5()
   cout << "Starting Write..." << endl;
   writeArr(x, 0, store, "x", 1, new int[1]{nx});
   writeArr(z, 0, store, "z", 1, new int[1]{nz});
-  writeArr(eden, 0, store, "eden", 2, new int[2]{nx,nz});
   writeArr(edenplot, 0, store, "eden_ncrit", 2, new int[2]{nx,nz});
   writeArr(edepplot, 0, store, "total_intensity", 2, new int[2]{nx,nz});
-  writeArr(i_b1, 0, store, "i_b1", 2, new int[2]{nx,nz});
-  writeArr(i_b2, 0, store, "i_b2", 2, new int[2]{nx,nz});
-  writeArr(i_b2_new, 0, store, "i_b2_new", 2, new int[2]{nx,nz});
-  writeArr(i_b1_new, 0, store, "i_b1_new", 2, new int[2]{nx,nz});
   writeArr(i_b_newplot, 0, store, "i_b_newplot", 2, new int[2]{nx,nz});
   writeArr(i_bplot, 0, store, "i_bplot", 2, new int[2]{nx,nz});
   cout << "Write Finished" << endl;
